@@ -2,6 +2,7 @@ package com.chinthaka.backendroyallmssystem.student.response;
 
 import com.chinthaka.backendroyallmssystem.address.Address;
 import com.chinthaka.backendroyallmssystem.gender.Gender;
+
 import lombok.Data;
 
 @Data

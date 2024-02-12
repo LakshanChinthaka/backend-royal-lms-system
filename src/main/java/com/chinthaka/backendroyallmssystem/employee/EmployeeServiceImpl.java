@@ -4,7 +4,6 @@ import com.chinthaka.backendroyallmssystem.employee.request.EmployeeSaveDTO;
 import com.chinthaka.backendroyallmssystem.employee.response.EmployeeResponseDTO;
 import com.chinthaka.backendroyallmssystem.excaption.AlreadyExistException;
 import com.chinthaka.backendroyallmssystem.excaption.HandleException;
-import com.chinthaka.backendroyallmssystem.excaption.NotFoundException;
 import com.chinthaka.backendroyallmssystem.utils.EntityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +12,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class EmployeeServiceImpl implements IEmployeeService{
+public class EmployeeServiceImpl implements IEmployeeService {
 
 
     private final EmployeeRepo employeeRepo;
@@ -23,7 +22,7 @@ public class EmployeeServiceImpl implements IEmployeeService{
     public String addEmployee(EmployeeSaveDTO employeeSaveDTO) {
         EntityUtils.isEmpty(employeeSaveDTO);
 
-        if ( employeeRepo.existsByNic(employeeSaveDTO.getNic())){
+        if (employeeRepo.existsByNic(employeeSaveDTO.getNic())) {
             throw new AlreadyExistException("Employee Already Exist");
         }
         try {
@@ -31,8 +30,8 @@ public class EmployeeServiceImpl implements IEmployeeService{
             Employee employee = employeeMapper.employeeSaveDTOtoEmployee(employeeSaveDTO);
             employeeRepo.save(employee);
             return "Employee successfully created";
-        }catch (Exception e){
-            log.error("Error while creating employee: {}",e.getMessage());
+        } catch (Exception e) {
+            log.error("Error while creating employee: {}", e.getMessage());
             throw new HandleException("Something went wrong during creating employee");
         }
     }
@@ -40,12 +39,28 @@ public class EmployeeServiceImpl implements IEmployeeService{
     @Override
     public EmployeeResponseDTO employeeFindById(long empId) {
         log.info("Execute employee findById method");
-        final Employee employee = EntityUtils.getEntityDetails(empId,employeeRepo,"Employee");
-        return employeeMapper.employeeToEmployeeResponseDTO(employee);
+        final Employee employee = EntityUtils.getEntityDetails(empId, employeeRepo, "Employee");
+//        EmployeeResponseDTO employeeResponseDTO = employeeMapper.employeeToEmployeeResponseDTO(employee);
+        EmployeeResponseDTO employeeResponseDTO = new EmployeeResponseDTO(
+                employee.getId(),
+                employee.getFirstName(),
+                employee.getLastName(),
+                employee.getNic(),
+                employee.getMobileNo(),
+                employee.getGender(),
+                employee.getDob(),
+                employee.isActiveStatus(),
+                employee.getEmployeeType(),
+                employee.getExperince(),
+                employee.getAddress(),
+                employee.getQualification().getQualificationId(),
+                employee.getQualification().getQualification()
+        );
+        return employeeResponseDTO;
     }
 
     @Override
-    public String uploadEmployeeById(EmployeeSaveDTO employeeSaveDTO, long empId) {
+    public String updateEmployeeById(EmployeeSaveDTO employeeSaveDTO, long empId) {
         return null;
     }
 

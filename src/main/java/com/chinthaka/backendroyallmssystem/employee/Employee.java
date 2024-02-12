@@ -3,10 +3,7 @@ package com.chinthaka.backendroyallmssystem.employee;
 import com.chinthaka.backendroyallmssystem.address.Address;
 import com.chinthaka.backendroyallmssystem.baseUser.BaseUser;
 import com.chinthaka.backendroyallmssystem.qualification.Qualification;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
@@ -17,6 +14,7 @@ import javax.persistence.*;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "employee")
 public class Employee extends BaseUser {

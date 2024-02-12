@@ -10,17 +10,25 @@ import com.chinthaka.backendroyallmssystem.excaption.NotFoundException;
 import com.chinthaka.backendroyallmssystem.school.School;
 import com.chinthaka.backendroyallmssystem.school.SchoolRepo;
 import com.chinthaka.backendroyallmssystem.utils.EntityUtils;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
 public class BatchServiceImpl implements IBatchService{
 
     private final BatchRepo batchRepo;
     private final CourseRepo courseRepo;
     private final SchoolRepo schoolRepo;
     private final BatchMapper batchMapper;
+
+    @Autowired
+    public BatchServiceImpl(BatchRepo batchRepo, CourseRepo courseRepo, SchoolRepo schoolRepo, BatchMapper batchMapper) {
+        this.batchRepo = batchRepo;
+        this.courseRepo = courseRepo;
+        this.schoolRepo = schoolRepo;
+        this.batchMapper = batchMapper;
+    }
 
     @Override
     public BatchResponseDTO getById(long batchId) {

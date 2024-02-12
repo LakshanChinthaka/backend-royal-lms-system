@@ -7,19 +7,36 @@ import com.chinthaka.backendroyallmssystem.excaption.AlreadyExistException;
 import com.chinthaka.backendroyallmssystem.excaption.HandleException;
 import com.chinthaka.backendroyallmssystem.school.School;
 import com.chinthaka.backendroyallmssystem.school.SchoolRepo;
+import com.chinthaka.backendroyallmssystem.subject.request.SubjectDTO;
+import com.chinthaka.backendroyallmssystem.subjectAssign.SubjectAssignRepo;
+import com.chinthaka.backendroyallmssystem.subjectAssign.SubjectAssignToCourse;
+import com.chinthaka.backendroyallmssystem.subjectAssign.response.SubjectAssignResponseDTO;
 import com.chinthaka.backendroyallmssystem.utils.EntityUtils;
-import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
-@RequiredArgsConstructor
+@Slf4j
 public class CourserServiceImpl implements ICourseService {
 
     private final CourseRepo courseRepo;
     private final CourseMapper courseMapper;
     private final SchoolRepo schoolRepo;
+    private final SubjectAssignRepo subjectAssignRepo;
+
+    @Autowired
+    public CourserServiceImpl(CourseRepo courseRepo, CourseMapper courseMapper, SchoolRepo schoolRepo, SubjectAssignRepo subjectAssignRepo) {
+        this.courseRepo = courseRepo;
+        this.courseMapper = courseMapper;
+        this.schoolRepo = schoolRepo;
+        this.subjectAssignRepo = subjectAssignRepo;
+    }
 
     @Override
     public String createCourse(CourseDTO courseDTO) {
@@ -44,13 +61,33 @@ public class CourserServiceImpl implements ICourseService {
 
     @Override
     public CourseResponseDTO courseGetById(long courseId) {
+        log.info("Start get course details by course id: {} ",courseId);
         final Course course = EntityUtils.getEntityDetails(courseId,courseRepo,"Course");
         School school = EntityUtils.getEntityDetails(
                 course.getSchool().getSchoolID(),schoolRepo,"School");
-        CourseResponseDTO courseResponseDTO = courseMapper.courseToCourseResponseDTO(course);
-        courseResponseDTO.setSchoolCode(school.getSchoolCode());
-        courseResponseDTO.setSchoolName(school.getSchoolName());
-        return courseResponseDTO;
+     try {
+         CourseResponseDTO courseResponseDTO = courseMapper.courseToCourseResponseDTO(course);
+         courseResponseDTO.setSchoolCode(school.getSchoolCode());
+         courseResponseDTO.setSchoolName(school.getSchoolName());
+         //get assign subjects and add to course payload
+         List<SubjectAssignToCourse> subjectList = subjectAssignRepo.findAllByCourse(course);
+         List<SubjectAssignResponseDTO> subList = new ArrayList<>();
+         for (SubjectAssignToCourse s : subjectList){
+             SubjectAssignResponseDTO sub = new SubjectAssignResponseDTO(
+                     s.getAssignId(),
+                     s.getSubjects().getSubjectId(),
+                     s.getSubjects().getSubjectCode(),
+                     s.getSubjects().getName()
+             );
+             subList.add(sub);
+         }
+         log.info("Success mapping subject to course");
+         courseResponseDTO.setSubjectlist(subList);
+         return courseResponseDTO;
+     }catch (Exception e){
+         log.error("Error fetching course details {} ",e.getMessage());
+         throw new HandleException("Something went wrong during fetching course details");
+     }
     }
 
     @Override

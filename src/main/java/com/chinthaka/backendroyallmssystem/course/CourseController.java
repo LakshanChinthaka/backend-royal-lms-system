@@ -6,6 +6,7 @@ import com.chinthaka.backendroyallmssystem.course.request.CourseEditDTO;
 import com.chinthaka.backendroyallmssystem.course.response.CourseResponseDTO;
 import com.chinthaka.backendroyallmssystem.utils.StandardResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -19,11 +20,15 @@ import java.util.Arrays;
 import java.util.List;
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("api/v1/course")
 public class CourseController {
 
     private final ICourseService courseService;
+
+    @Autowired
+    public CourseController(ICourseService courseService) {
+        this.courseService = courseService;
+    }
 
     @PostMapping("/add")
     @PreAuthorize("hasRole('ROLE_ADMIN')")

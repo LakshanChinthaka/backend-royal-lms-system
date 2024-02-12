@@ -4,6 +4,7 @@ package com.chinthaka.backendroyallmssystem.batch;
 import com.chinthaka.backendroyallmssystem.course.Course;
 import com.chinthaka.backendroyallmssystem.school.School;
 import com.chinthaka.backendroyallmssystem.utils.Auditor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -30,15 +31,13 @@ public class Batch extends Auditor {
     @Column(name = "active_statue", columnDefinition = "TINYINT default 1")
     private boolean activeStatus;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "course_id")
     private Course course;
 
     @ManyToOne
     @JoinColumn(name = "school_id")
     private School school;
-
-
 
     public Batch(Long batchId, String code) {
         this.batchId = batchId;

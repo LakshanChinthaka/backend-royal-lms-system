@@ -4,9 +4,13 @@ import com.chinthaka.backendroyallmssystem.course.Category;
 import com.chinthaka.backendroyallmssystem.course.Medium;
 import com.chinthaka.backendroyallmssystem.course.Type;
 import com.chinthaka.backendroyallmssystem.school.School;
+import com.chinthaka.backendroyallmssystem.subjectAssign.SubjectAssignToCourse;
+import com.chinthaka.backendroyallmssystem.subjectAssign.response.SubjectAssignResponseDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 
 @Data
@@ -26,6 +30,7 @@ public class CourseResponseDTO {
     private Medium medium;
     private String schoolName;
     private String schoolCode;
+    private List<SubjectAssignResponseDTO> subjectlist;
 
     public void setSchool(School school) {
         this.schoolName = school.getSchoolName();

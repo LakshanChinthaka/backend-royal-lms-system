@@ -3,6 +3,7 @@ package com.chinthaka.backendroyallmssystem.course;
 import com.chinthaka.backendroyallmssystem.batch.Batch;
 import com.chinthaka.backendroyallmssystem.school.School;
 import com.chinthaka.backendroyallmssystem.utils.Auditor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -61,10 +62,12 @@ public class Course extends Auditor {
     @Column(name = "active_statue", columnDefinition = "TINYINT default 1")
     private boolean active_statue;
 
-    @OneToMany(mappedBy="course",cascade = CascadeType.ALL)
+    @JsonIgnore
+    @OneToMany(mappedBy="course",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Batch> batchList;
 
-    @ManyToOne
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="school_id")
     private School school;
 }

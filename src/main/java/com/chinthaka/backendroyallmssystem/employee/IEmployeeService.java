@@ -9,7 +9,7 @@ public interface IEmployeeService {
 
     EmployeeResponseDTO employeeFindById(long empId);
 
-    String uploadEmployeeById(EmployeeSaveDTO employeeSaveDTO, long empId);
-
     String deleteEmployee(long empId);
+
+    String updateEmployeeById(EmployeeSaveDTO employeeSaveDTO, long empId);
 }

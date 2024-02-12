@@ -37,9 +37,9 @@ public class EmployeeController {
 
     @PutMapping(value = "/edit-by-id",params = {"id"})
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<StandardResponse> uploadEmployeeById(
+    public ResponseEntity<StandardResponse> updateEmployeeById(
             @RequestParam("id") long empId,@RequestBody EmployeeSaveDTO employeeSaveDTO){
-        final String response = employeeService.uploadEmployeeById(employeeSaveDTO,empId);
+        final String response = employeeService.updateEmployeeById(employeeSaveDTO,empId);
         return new ResponseEntity<>(
                 new StandardResponse(200,"Success",response), HttpStatus.OK);
     }
