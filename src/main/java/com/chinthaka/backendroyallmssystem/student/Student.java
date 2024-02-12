@@ -2,6 +2,8 @@ package com.chinthaka.backendroyallmssystem.student;
 
 import com.chinthaka.backendroyallmssystem.address.Address;
 import com.chinthaka.backendroyallmssystem.baseUser.BaseUser;
+import com.chinthaka.backendroyallmssystem.studentEnrollment.StudentEnroll;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -25,6 +27,5 @@ public class Student  extends BaseUser {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "address_id")
     private Address address;
-
 
 }

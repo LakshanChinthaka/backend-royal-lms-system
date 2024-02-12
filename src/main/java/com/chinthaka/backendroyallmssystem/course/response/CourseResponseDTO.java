@@ -1,5 +1,7 @@
 package com.chinthaka.backendroyallmssystem.course.response;
 
+import com.chinthaka.backendroyallmssystem.batch.Batch;
+import com.chinthaka.backendroyallmssystem.batch.response.BatchResponseDTO;
 import com.chinthaka.backendroyallmssystem.course.Category;
 import com.chinthaka.backendroyallmssystem.course.Medium;
 import com.chinthaka.backendroyallmssystem.course.Type;

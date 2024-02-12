@@ -8,6 +8,7 @@ import com.chinthaka.backendroyallmssystem.subject.Subject;
 import com.chinthaka.backendroyallmssystem.subject.SubjectRepo;
 import com.chinthaka.backendroyallmssystem.subjectAssign.request.SubjectAssignToCourseDTO;
 import com.chinthaka.backendroyallmssystem.utils.EntityUtils;
+import com.fasterxml.jackson.core.JsonToken;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -49,5 +50,24 @@ public class SubjectAssignServiceImpl implements ISubjectAssignService {
            log.error("Error while subject assign to course {}", e.getMessage());
            throw new HandleException("Something went wrong subject Assign to course");
        }
+    }
+
+    @Override
+    public String removeAssignSubject(long subjectId, long courseId) {
+        Course course = EntityUtils.getEntityDetails(courseId,courseRepo,"Course");
+        Subject subject = EntityUtils.getEntityDetails(subjectId,subjectRepo,"Subject");
+      try {
+          SubjectAssignToCourse foundRecord = subjectAssignRepo.findByCourseAndSubjects(course,subject);
+          if (foundRecord != null){
+              subjectAssignRepo.deleteById(foundRecord.getAssignId());
+          }
+            return "Successfully removed";
+      }catch (NullPointerException e){
+          log.error("Error while fetching assign subject: {} ",e.getMessage());
+          throw new NotFoundException("Record not found");
+      }catch (Exception e){
+          log.error("Error while deleting assign subject: {} ",e.getMessage());
+          throw new NotFoundException("Something went wrong while deleting assign subject");
+      }
     }
 }

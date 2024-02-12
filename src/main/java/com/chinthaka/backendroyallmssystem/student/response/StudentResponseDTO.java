@@ -15,7 +15,6 @@ public class StudentResponseDTO {
     private Gender gender;
     private String dob;
     private boolean activeStatus;
-    private String email;
     private String imageUrl;
     private Address address;
 }

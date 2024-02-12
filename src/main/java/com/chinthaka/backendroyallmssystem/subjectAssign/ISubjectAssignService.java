@@ -5,4 +5,6 @@ import com.chinthaka.backendroyallmssystem.subjectAssign.request.SubjectAssignTo
 public interface ISubjectAssignService {
 
     String assignSubjectToCourse(SubjectAssignToCourseDTO subjectAssignToCourseDTO);
+
+    String removeAssignSubject(long subjectId, long courseId);
 }

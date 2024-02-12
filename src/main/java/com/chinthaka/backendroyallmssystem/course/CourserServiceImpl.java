@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -119,9 +120,25 @@ public class CourserServiceImpl implements ICourseService {
     public Page<CourseResponseDTO> getAllCourse(Pageable pageable) {
         try{
             Page<Course> courses = courseRepo.findAll(pageable);
-            return courses.map(courseMapper::courseToCourseResponseDTO);
-            //we can use other way below
-            // return courses.map(course -> courseMapper.courseToCourseResponseDTO(course));
+            //above did that same process but approach is different;
+            return courses.map(course -> {
+                CourseResponseDTO courseResponseDTO = courseMapper.courseToCourseResponseDTO(course);
+                // next Fetch school details
+                School school = EntityUtils.getEntityDetails(course.getSchool().getSchoolID(), schoolRepo, "School");
+                courseResponseDTO.setSchoolCode(school.getSchoolCode());
+                courseResponseDTO.setSchoolName(school.getSchoolName());
+                // Fetch subject assignments and map to response DTO
+                List<SubjectAssignToCourse> subjectList = subjectAssignRepo.findAllByCourse(course);
+                List<SubjectAssignResponseDTO> subList = subjectList.stream()
+                        .map(s -> new SubjectAssignResponseDTO(
+                                s.getAssignId(),
+                                s.getSubjects().getSubjectId(),
+                                s.getSubjects().getSubjectCode(),
+                                s.getSubjects().getName()))
+                        .collect(Collectors.toList());
+                courseResponseDTO.setSubjectlist(subList);
+                return courseResponseDTO;
+            });
         }catch (Exception e){
             throw new HandleException("Something went wrong during fetching course details");
         }

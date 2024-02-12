@@ -1,5 +1,6 @@
-package com.chinthaka.backendroyallmssystem.subjectAssign;
+package com.chinthaka.backendroyallmssystem.studentEnrollment;
 
+import com.chinthaka.backendroyallmssystem.studentEnrollment.request.StudentEnrollDTO;
 import com.chinthaka.backendroyallmssystem.subjectAssign.request.SubjectAssignToCourseDTO;
 import com.chinthaka.backendroyallmssystem.utils.StandardResponse;
 import lombok.RequiredArgsConstructor;
@@ -10,26 +11,26 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/v1/assign")
-public class SubjectAssignController {
+@RequestMapping("api/v1/enroll")
+public class StudentEnrollController {
 
-    private final ISubjectAssignService subjectAssignService;
+    private final IStudentEnrollService enrollService;
 
     @PostMapping("/add")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<StandardResponse> assignSubjectToCourse(
-            @RequestBody SubjectAssignToCourseDTO subjectAssignToCourseDTO) {
-        final String response = subjectAssignService.assignSubjectToCourse(subjectAssignToCourseDTO);
+    public ResponseEntity<StandardResponse> studentEnroll(
+            @RequestBody StudentEnrollDTO studentEnrollDTO) {
+        final String response = enrollService.studentEnroll(studentEnrollDTO);
         return new ResponseEntity<>(
                 new StandardResponse(200, "Success", response), HttpStatus.CREATED);
     }
 
 
-    @DeleteMapping(value = "/remove", params = {"subjectId", "courseId"})
+    @DeleteMapping(value = "/remove", params = {"studentId", "batchId"})
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<StandardResponse> removeAssignSubject(
-            @RequestParam("subjectId") long subjectId, @RequestParam("courseId") long courseId) {
-        final String response = subjectAssignService.removeAssignSubject(subjectId, courseId);
+    public ResponseEntity<StandardResponse> removeStudent(
+            @RequestParam("studentId") long studentId, @RequestParam("batchId") long batchId) {
+        final String response = enrollService.removeStudent(studentId, batchId);
         return new ResponseEntity<>(
                 new StandardResponse(200, "Success", response), HttpStatus.OK);
     }
