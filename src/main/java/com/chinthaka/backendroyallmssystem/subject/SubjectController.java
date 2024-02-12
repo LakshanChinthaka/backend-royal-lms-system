@@ -1,0 +1,54 @@
+package com.chinthaka.backendroyallmssystem.subject;
+
+
+import com.chinthaka.backendroyallmssystem.subject.request.SubjectDTO;
+import com.chinthaka.backendroyallmssystem.utils.StandardResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequiredArgsConstructor
+@Slf4j
+@RequestMapping("api/v1/subject")
+public class SubjectController {
+
+    private final ISubjectService subjectService;
+
+    @PostMapping("/add")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<StandardResponse> addSubject(@RequestBody SubjectDTO subjectDTO){
+        final String response = subjectService.addSubject(subjectDTO);
+        return new ResponseEntity<>(
+                new StandardResponse(200,"Success",response), HttpStatus.CREATED);
+    }
+
+    @GetMapping(value = "/find-by-id",params = {"id"})
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<StandardResponse> subjectGetById(@RequestParam("id") long subjectId){
+        SubjectDTO response = subjectService.subjectGetById(subjectId);
+        return new ResponseEntity<>(
+                new StandardResponse(200,"Success",response), HttpStatus.OK);
+    }
+
+
+    @DeleteMapping(value = "/delete",params = {"id"})
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<StandardResponse> deleteSubject(@RequestParam("id") long subjectId){
+        final String response = subjectService.deleteSubject(subjectId);
+        return new ResponseEntity<>(
+                new StandardResponse(200,"Success",response), HttpStatus.OK);
+    }
+
+    @PutMapping(value = "/edit",params = {"id"})
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<StandardResponse> editSubject(
+            @RequestParam("id") long subjectId, @RequestBody SubjectDTO subjectDTO){
+        final String response = subjectService.editSubject(subjectId,subjectDTO);
+        return new ResponseEntity<>(
+                new StandardResponse(200,"Success",response), HttpStatus.OK);
+    }
+}
