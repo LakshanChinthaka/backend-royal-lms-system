@@ -1,6 +1,7 @@
 package com.chinthaka.backendroyallmssystem.student.response;
 
 import com.chinthaka.backendroyallmssystem.address.Address;
+import com.chinthaka.backendroyallmssystem.batch.response.BatchResponseDTO;
 import com.chinthaka.backendroyallmssystem.gender.Gender;
 
 import lombok.Data;
@@ -17,4 +18,6 @@ public class StudentResponseDTO {
     private boolean activeStatus;
     private String imageUrl;
     private Address address;
+//    private long enrollId;
+//    private BatchResponseDTO batch;
 }

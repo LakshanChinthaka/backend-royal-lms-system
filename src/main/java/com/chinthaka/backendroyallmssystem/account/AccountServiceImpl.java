@@ -11,6 +11,7 @@ import com.chinthaka.backendroyallmssystem.student.StudentRepo;
 import com.chinthaka.backendroyallmssystem.student.response.StudentResponseDTO;
 import com.chinthaka.backendroyallmssystem.utils.EntityUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -24,6 +25,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AccountServiceImpl implements IAccountService{
 
     private final AuthenticationManager authenticationManager;
@@ -35,6 +37,8 @@ public class AccountServiceImpl implements IAccountService{
 
     @Override
     public Object createAuthenticationToken(AuthRequest authenticationRequest) throws Exception {
+        log.info("Start createAuthenticationToken: password:{}, username: {} ",
+                authenticationRequest.getUsername(),authenticationRequest.getUsername());
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword())

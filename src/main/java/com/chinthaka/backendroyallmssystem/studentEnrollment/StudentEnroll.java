@@ -24,7 +24,7 @@ public class StudentEnroll extends Auditor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long enrollId;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "student_id",nullable = false)
     private Student student;
 

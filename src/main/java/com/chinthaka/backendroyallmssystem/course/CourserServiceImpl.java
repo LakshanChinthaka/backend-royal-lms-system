@@ -44,18 +44,20 @@ public class CourserServiceImpl implements ICourseService {
         if (courseDTO == null){
             throw new AlreadyExistException("Course details not provide");
         }
-        if (EntityUtils.isCourseExist(courseDTO.getCourseId(),courseRepo)
-        && courseRepo.findByCode(courseDTO.getCourseId())){
-            throw new AlreadyExistException(
-                    "Course " + courseDTO.getCourseId() +" Already Exist");
+        if (courseRepo.existsByCode(courseDTO.getCode())){
+            throw new AlreadyExistException("Course code: " +courseDTO.getCode()+ " Already exist");
         }
         try {
+            log.info("Start map to courseDTO to entity");
             Course course = courseMapper.courseSaveDTOtoCourse(courseDTO);
+            log.info("School id: {}",courseDTO.getSchoolId());
             School school = EntityUtils.getEntityDetails(courseDTO.getSchoolId(),schoolRepo,"School");
             course.setSchool(school);
+            log.info("Save new course");
             courseRepo.save(course);
             return "Course successfully created";
         }catch (Exception e){
+            log.error("Error while creating new course: {}",e.getMessage());
             throw new HandleException("Something went wrong during creating course");
         }
     }

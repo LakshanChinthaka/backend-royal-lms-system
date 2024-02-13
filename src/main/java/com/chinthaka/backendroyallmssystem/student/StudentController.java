@@ -4,6 +4,7 @@ import com.chinthaka.backendroyallmssystem.student.request.StudentDTO;
 import com.chinthaka.backendroyallmssystem.student.response.StudentResponseDTO;
 import com.chinthaka.backendroyallmssystem.utils.StandardResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -12,7 +13,9 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 @RequestMapping("api/v1/student")
+//@CrossOrigin("http://localhost:5173")
 public class StudentController {
 
 
@@ -21,6 +24,7 @@ public class StudentController {
     @PostMapping("/add")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<StandardResponse> addStudent(@RequestBody StudentDTO studentDTO){
+        log.info("Start to execute addStudent : {} ", studentDTO);
             final String response = studentService.addStudent(studentDTO);
             return new ResponseEntity<>(
                     new StandardResponse(200,"Success",response), HttpStatus.OK);
@@ -38,7 +42,7 @@ public class StudentController {
                 new StandardResponse(200,"Success",response), HttpStatus.OK);
     }
 
-    @GetMapping(value = "/find-by-id",params = {"id"})
+    @GetMapping(value = "/find",params = {"id"})
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<StandardResponse> studentFindById(@RequestParam("id") long studentId){
         StudentResponseDTO response = studentService.studentFindById(studentId);

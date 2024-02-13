@@ -26,11 +26,11 @@ public class StudentEnrollController {
     }
 
 
-    @DeleteMapping(value = "/remove", params = {"studentId", "batchId"})
+    @DeleteMapping(value = "/remove", params = {"studentId"})
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<StandardResponse> removeStudent(
-            @RequestParam("studentId") long studentId, @RequestParam("batchId") long batchId) {
-        final String response = enrollService.removeStudent(studentId, batchId);
+            @RequestParam("studentId") long studentId) {
+        final String response = enrollService.removeStudent(studentId);
         return new ResponseEntity<>(
                 new StandardResponse(200, "Success", response), HttpStatus.OK);
     }

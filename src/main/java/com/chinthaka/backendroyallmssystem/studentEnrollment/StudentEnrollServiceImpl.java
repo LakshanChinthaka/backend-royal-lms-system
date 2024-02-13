@@ -4,6 +4,7 @@ import com.chinthaka.backendroyallmssystem.batch.Batch;
 import com.chinthaka.backendroyallmssystem.batch.BatchRepo;
 import com.chinthaka.backendroyallmssystem.excaption.AlreadyExistException;
 import com.chinthaka.backendroyallmssystem.excaption.HandleException;
+import com.chinthaka.backendroyallmssystem.excaption.NotFoundException;
 import com.chinthaka.backendroyallmssystem.student.Student;
 import com.chinthaka.backendroyallmssystem.student.StudentRepo;
 import com.chinthaka.backendroyallmssystem.studentEnrollment.request.StudentEnrollDTO;
@@ -23,13 +24,15 @@ public class StudentEnrollServiceImpl implements IStudentEnrollService {
 
     @Override
     public String studentEnroll(StudentEnrollDTO studentEnrollDTO) {
+        log.info("Start Execute studentEnroll: {}", studentEnrollDTO);
         Batch batch = EntityUtils.getEntityDetails(
                 studentEnrollDTO.getBatchId(), batchRepo, "Batch");
         Student student = EntityUtils.getEntityDetails(
                 studentEnrollDTO.getStudentId(), studentRepo, "Student");
-        if (studentEnrollRepo.existsByStudentAndBatch(student,batch)){
+        if (studentEnrollRepo.existsByStudent(student)) {
             throw new AlreadyExistException(
-                    "Student id: "+studentEnrollDTO.getStudentId()+ " Already Enrolled");
+                    "Student id: " + studentEnrollDTO.getStudentId() +
+                            " Already Enrolled");
         }
         try {
             final StudentEnroll studentEnroll = new StudentEnroll(
@@ -46,7 +49,18 @@ public class StudentEnrollServiceImpl implements IStudentEnrollService {
     }
 
     @Override
-    public String removeStudent(long studentId, long batchId) {
+    public String removeStudent(long studentId) {
+        log.info("Start Execute removing student id: {}",studentId);
+        Student student = EntityUtils.getEntityDetails(studentId, studentRepo, "Student");
+        if (!studentEnrollRepo.existsByStudent(student)) {
+            throw new NotFoundException("Student id: " + studentId + "Not found");
+        }
+        try {
+
+        }catch (Exception e){
+            log.error("Error while removing student from batch {}", e.getMessage());
+            throw new HandleException("Something went wrong removing student from batch");
+        }
         return null;
     }
 }

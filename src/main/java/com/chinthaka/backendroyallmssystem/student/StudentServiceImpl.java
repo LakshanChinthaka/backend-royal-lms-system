@@ -9,12 +9,14 @@ import com.chinthaka.backendroyallmssystem.student.request.StudentDTO;
 import com.chinthaka.backendroyallmssystem.student.response.StudentResponseDTO;
 import com.chinthaka.backendroyallmssystem.utils.EntityUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class StudentServiceImpl implements IStudentService {
 
     private final StudentRepo studentRepo;
@@ -42,6 +44,7 @@ public class StudentServiceImpl implements IStudentService {
             studentRepo.save(student);
             return "Registration successful";
         } catch (Exception e) {
+            log.error("Error while student registration {} ", e.getMessage());
             throw new HandleException("Something went wrong during student registration");
         }
     }
@@ -49,35 +52,34 @@ public class StudentServiceImpl implements IStudentService {
 
     @Override
     public String uploadImage(String imageUrl, long studentId) {
-        Student student = EntityUtils.getEntityDetails(studentId,studentRepo,"Student");
+        Student student = EntityUtils.getEntityDetails(studentId, studentRepo, "Student");
         System.out.println(student);
-        if (imageUrl == null || imageUrl.trim().isEmpty()){
+        if (imageUrl == null || imageUrl.trim().isEmpty()) {
             throw new NotFoundException("Image not found in url");
         }
         try {
-           student.setImageUrl(imageUrl);
-           studentRepo.save(student);
-           return "Image upload success";
-        }catch (Exception e){
+            student.setImageUrl(imageUrl);
+            studentRepo.save(student);
+            return "Image upload success";
+        } catch (Exception e) {
             throw new HandleException("Something went wrong during upload image");
         }
     }
 
     @Override
     public StudentResponseDTO studentFindById(long studentId) {
-//        Student student = EntityUtils.getStudentDetails(studentId,studentRepo);
-        Student student = EntityUtils.getEntityDetails(studentId,studentRepo,"Student");
+        Student student = EntityUtils.getEntityDetails(studentId, studentRepo, "Student");
         return studentMapper.studentToStudentResponseDTO(student);
     }
 
     @Override
     public String uploadStudentById(StudentDTO studentDTO, long studentId) {
-        Student student = EntityUtils.getEntityDetails(studentId,studentRepo,"Student");
+        Student student = EntityUtils.getEntityDetails(studentId, studentRepo, "Student");
         try {
             final Student convetedStuent = studentMapper.studentSaveDTOtoEntity(studentDTO);
             studentRepo.save(convetedStuent);
             return "Student " + studentId + " Successfully updated";
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new HandleException("Something went wrong during upload student details");
         }
 
@@ -85,12 +87,12 @@ public class StudentServiceImpl implements IStudentService {
 
     @Override
     public String deleteStudent(long studentId) {
-        Student student = EntityUtils.getEntityDetails(studentId,studentRepo,"Student");
+        Student student = EntityUtils.getEntityDetails(studentId, studentRepo, "Student");
         try {
             student.setActiveStatus(false);
-           studentRepo.save(student);
+            studentRepo.save(student);
             return "Student " + studentId + " Successfully Deleted";
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new HandleException("Something went wrong during deleting student details");
         }
     }
