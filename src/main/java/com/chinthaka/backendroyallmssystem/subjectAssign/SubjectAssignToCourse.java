@@ -23,11 +23,11 @@ public class SubjectAssignToCourse extends Auditor {
     @Column(name = "assign_id")
     private long assignId;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "subject_id")
     private Subject subjects;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "course_id")
     private Course course;
 }

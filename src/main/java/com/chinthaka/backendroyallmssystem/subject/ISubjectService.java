@@ -2,6 +2,8 @@ package com.chinthaka.backendroyallmssystem.subject;
 
 
 import com.chinthaka.backendroyallmssystem.subject.request.SubjectDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface ISubjectService {
 
@@ -12,4 +14,6 @@ public interface ISubjectService {
     String deleteSubject(long subjectId);
 
     String editSubject(long subjectId, SubjectDTO subjectDTO);
+
+    Page<SubjectDTO> getAllSubject(Pageable pageable);
 }

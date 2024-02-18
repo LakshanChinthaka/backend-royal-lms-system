@@ -7,4 +7,6 @@ import org.springframework.stereotype.Repository;
 public interface EmployeeRepo extends JpaRepository<Employee,Long> {
 
     boolean existsByNic(String nic);
+
+    Employee findByNic(String nic);
 }

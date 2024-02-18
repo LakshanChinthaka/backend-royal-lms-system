@@ -4,10 +4,8 @@ import com.chinthaka.backendroyallmssystem.batch.Batch;
 import com.chinthaka.backendroyallmssystem.school.School;
 import com.chinthaka.backendroyallmssystem.utils.Auditor;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
@@ -16,7 +14,9 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
+@DynamicUpdate
 @AllArgsConstructor
+@Builder
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "course")
@@ -26,19 +26,19 @@ public class Course extends Auditor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long courseId;
 
-    @Column(name = "code", unique = true, nullable = false)
+    @Column(name = "code", unique = true)
     private String code;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name")
     private String name;
 
-    @Column(name = "description", nullable = false)
+    @Column(name = "description")
     private String description;
 
-    @Column(name = "total_credit", nullable = false)
+    @Column(name = "total_credit")
     private int totalCredit;
 
-    @Column(name = "total_hours", nullable = false)
+    @Column(name = "total_hours")
     private int totalHours;
 
     @Enumerated(EnumType.STRING)

@@ -11,5 +11,6 @@ import java.util.List;
 @NoArgsConstructor
 public class SubjectAssignToCourseDTO {
     private long courseId;
-    private List<Long> subjectIds;
+//    private List<Long> subjectIds;
+    private long subjectId;
 }

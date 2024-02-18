@@ -10,7 +10,7 @@ public interface EmployeeMapper {
 
     EmployeeMapper employeeMapper = Mappers.getMapper( EmployeeMapper.class );
 
-    EmployeeResponseDTO employeeToEmployeeResponseDTO(Employee employee);
+//    EmployeeResponseDTO employeeToEmployeeResponseDTO(Employee employee);
 
     Employee employeeSaveDTOtoEmployee(EmployeeSaveDTO employeeSaveDTO);
 

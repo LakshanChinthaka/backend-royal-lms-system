@@ -1,12 +1,15 @@
 package com.chinthaka.backendroyallmssystem.subjectAssign;
 
 import com.chinthaka.backendroyallmssystem.subjectAssign.request.SubjectAssignToCourseDTO;
+import com.chinthaka.backendroyallmssystem.subjectAssign.response.SubjectAssignResponseDTO;
 import com.chinthaka.backendroyallmssystem.utils.StandardResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -33,5 +36,14 @@ public class SubjectAssignController {
         return new ResponseEntity<>(
                 new StandardResponse(200, "Success", response), HttpStatus.OK);
     }
+
+    @GetMapping(value = "/find",params = {"id"})
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<StandardResponse> getSubjectByCourse(@RequestParam("id") long courseId){
+        List<SubjectAssignResponseDTO> response = subjectAssignService.getSubjectByCourse(courseId);
+        return new ResponseEntity<>(
+                new StandardResponse(200,"Success",response), HttpStatus.OK);
+    }
+
 
 }

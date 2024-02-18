@@ -2,15 +2,22 @@ package com.chinthaka.backendroyallmssystem.batch;
 
 import com.chinthaka.backendroyallmssystem.batch.request.BatchDTO;
 import com.chinthaka.backendroyallmssystem.batch.response.BatchResponseDTO;
+import com.chinthaka.backendroyallmssystem.subject.request.SubjectDTO;
 import com.chinthaka.backendroyallmssystem.utils.StandardResponse;
-import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+
 @RestController
+@Slf4j
 @RequestMapping("api/v1/batch")
 @CrossOrigin("http://localhost:5173")
 public class BatchController {
@@ -45,6 +52,27 @@ public class BatchController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<StandardResponse> deleteBatch(@RequestParam("id") long batchId){
         final String response = batchService.deleteBatch(batchId);
+        return new ResponseEntity<>(
+                new StandardResponse(200,"Success",response), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/find-all",params = {"id"})
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<StandardResponse> getAllBatch(
+            @PageableDefault(sort = "batchId",direction = Sort.Direction.DESC) Pageable pageable,
+            @RequestParam(name = "id") long courseId){
+        log.info("GET request received on /api/v1/batch/find-all");
+        Page<BatchResponseDTO> response = batchService.getAllBatch(pageable,courseId);
+        return new ResponseEntity<>(
+                new StandardResponse(200,"Success",response), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/find")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<StandardResponse> getAllSubject(
+            @PageableDefault(sort = "batchId",direction = Sort.Direction.DESC) Pageable pageable){
+        log.info("GET request received on /api/v1/batch/find");
+        Page<BatchResponseDTO> response = batchService.getAllBatchData(pageable);
         return new ResponseEntity<>(
                 new StandardResponse(200,"Success",response), HttpStatus.OK);
     }

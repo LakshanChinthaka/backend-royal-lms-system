@@ -7,4 +7,6 @@ public interface IAccountService {
     Object createAuthenticationToken(AuthRequest authenticationRequest) throws Exception;
 
     Object getCurrentUserDetails();
+
+    String registerUser(AccountCreateRequest accountCreateRequest);
 }

@@ -2,6 +2,8 @@ package com.chinthaka.backendroyallmssystem.studentEnrollment;
 
 import com.chinthaka.backendroyallmssystem.batch.Batch;
 import com.chinthaka.backendroyallmssystem.batch.BatchRepo;
+import com.chinthaka.backendroyallmssystem.course.Course;
+import com.chinthaka.backendroyallmssystem.course.CourseRepo;
 import com.chinthaka.backendroyallmssystem.excaption.AlreadyExistException;
 import com.chinthaka.backendroyallmssystem.excaption.HandleException;
 import com.chinthaka.backendroyallmssystem.excaption.NotFoundException;
@@ -21,6 +23,7 @@ public class StudentEnrollServiceImpl implements IStudentEnrollService {
     private final StudentEnrollRepo studentEnrollRepo;
     private final BatchRepo batchRepo;
     private final StudentRepo studentRepo;
+    private final CourseRepo courseRepo;
 
     @Override
     public String studentEnroll(StudentEnrollDTO studentEnrollDTO) {
@@ -29,6 +32,8 @@ public class StudentEnrollServiceImpl implements IStudentEnrollService {
                 studentEnrollDTO.getBatchId(), batchRepo, "Batch");
         Student student = EntityUtils.getEntityDetails(
                 studentEnrollDTO.getStudentId(), studentRepo, "Student");
+        Course course = EntityUtils.getEntityDetails(
+                studentEnrollDTO.getStudentId(), courseRepo, "Course");
         if (studentEnrollRepo.existsByStudent(student)) {
             throw new AlreadyExistException(
                     "Student id: " + studentEnrollDTO.getStudentId() +
@@ -36,9 +41,10 @@ public class StudentEnrollServiceImpl implements IStudentEnrollService {
         }
         try {
             final StudentEnroll studentEnroll = new StudentEnroll(
-                    0L,
+//                    0L,
                     student,
-                    batch
+                    batch,
+                    course
             );
             studentEnrollRepo.save(studentEnroll);
             return "Student id: " + studentEnrollDTO.getStudentId() + " Successfully Enrolled";

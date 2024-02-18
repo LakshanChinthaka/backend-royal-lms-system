@@ -3,11 +3,12 @@ package com.chinthaka.backendroyallmssystem.course;
 import com.chinthaka.backendroyallmssystem.course.request.CourseDTO;
 import com.chinthaka.backendroyallmssystem.course.request.CourseEditDTO;
 import com.chinthaka.backendroyallmssystem.course.response.CourseResponseDTO;
+import com.chinthaka.backendroyallmssystem.course.response.CourseResponseForDrop;
 import com.chinthaka.backendroyallmssystem.excaption.AlreadyExistException;
 import com.chinthaka.backendroyallmssystem.excaption.HandleException;
+import com.chinthaka.backendroyallmssystem.excaption.NotFoundException;
 import com.chinthaka.backendroyallmssystem.school.School;
 import com.chinthaka.backendroyallmssystem.school.SchoolRepo;
-import com.chinthaka.backendroyallmssystem.subject.request.SubjectDTO;
 import com.chinthaka.backendroyallmssystem.subjectAssign.SubjectAssignRepo;
 import com.chinthaka.backendroyallmssystem.subjectAssign.SubjectAssignToCourse;
 import com.chinthaka.backendroyallmssystem.subjectAssign.response.SubjectAssignResponseDTO;
@@ -41,66 +42,86 @@ public class CourserServiceImpl implements ICourseService {
 
     @Override
     public String createCourse(CourseDTO courseDTO) {
-        if (courseDTO == null){
+        log.info("Create new course:{}", courseDTO);
+        if (courseDTO == null) {
             throw new AlreadyExistException("Course details not provide");
         }
-        if (courseRepo.existsByCode(courseDTO.getCode())){
-            throw new AlreadyExistException("Course code: " +courseDTO.getCode()+ " Already exist");
+        if (courseRepo.existsByCode(courseDTO.getCode())) {
+            throw new AlreadyExistException("Course code: " + courseDTO.getCode() + " Already exist");
         }
         try {
-            log.info("Start map to courseDTO to entity");
             Course course = courseMapper.courseSaveDTOtoCourse(courseDTO);
-            log.info("School id: {}",courseDTO.getSchoolId());
-            School school = EntityUtils.getEntityDetails(courseDTO.getSchoolId(),schoolRepo,"School");
+            School school = EntityUtils.getEntityDetails(courseDTO.getSchoolId(), schoolRepo, "School");
             course.setSchool(school);
-            log.info("Save new course");
             courseRepo.save(course);
             return "Course successfully created";
-        }catch (Exception e){
-            log.error("Error while creating new course: {}",e.getMessage());
+        } catch (Exception e) {
+            log.error("Error while creating new course: {}", e.getMessage());
             throw new HandleException("Something went wrong during creating course");
         }
     }
 
     @Override
     public CourseResponseDTO courseGetById(long courseId) {
-        log.info("Start get course details by course id: {} ",courseId);
-        final Course course = EntityUtils.getEntityDetails(courseId,courseRepo,"Course");
+        log.info("Start get course details by course id: {} ", courseId);
+        final Course course = EntityUtils.getEntityDetails(courseId, courseRepo, "Course");
         School school = EntityUtils.getEntityDetails(
-                course.getSchool().getSchoolID(),schoolRepo,"School");
-     try {
-         CourseResponseDTO courseResponseDTO = courseMapper.courseToCourseResponseDTO(course);
-         courseResponseDTO.setSchoolCode(school.getSchoolCode());
-         courseResponseDTO.setSchoolName(school.getSchoolName());
-         //get assign subjects and add to course payload
-         List<SubjectAssignToCourse> subjectList = subjectAssignRepo.findAllByCourse(course);
-         List<SubjectAssignResponseDTO> subList = new ArrayList<>();
-         for (SubjectAssignToCourse s : subjectList){
-             SubjectAssignResponseDTO sub = new SubjectAssignResponseDTO(
-                     s.getAssignId(),
-                     s.getSubjects().getSubjectId(),
-                     s.getSubjects().getSubjectCode(),
-                     s.getSubjects().getName()
-             );
-             subList.add(sub);
-         }
-         log.info("Success mapping subject to course");
-         courseResponseDTO.setSubjectlist(subList);
-         return courseResponseDTO;
-     }catch (Exception e){
-         log.error("Error fetching course details {} ",e.getMessage());
-         throw new HandleException("Something went wrong during fetching course details");
-     }
+                course.getSchool().getSchoolID(), schoolRepo, "School");
+        try {
+            CourseResponseDTO courseResponseDTO = courseMapper.courseToCourseResponseDTO(course);
+            courseResponseDTO.setCreateBy(course.getCreateBy());
+            courseResponseDTO.setCreatedDate(course.getCreatedDate());
+            courseResponseDTO.setModifiedBy(course.getModifiedBy());
+            courseResponseDTO.setModifiedData(course.getModifiedData());
+            courseResponseDTO.setSchoolCode(school.getSchoolCode());
+            courseResponseDTO.setSchoolName(school.getSchoolName());
+            //get assign subjects and add to course payload
+            List<SubjectAssignToCourse> subjectList = subjectAssignRepo.findAllByCourse(course);
+            List<SubjectAssignResponseDTO> subList = new ArrayList<>();
+            for (SubjectAssignToCourse s : subjectList) {
+                SubjectAssignResponseDTO sub = new SubjectAssignResponseDTO(
+                        s.getAssignId(),
+                        s.getSubjects().getSubjectId(),
+                        s.getSubjects().getSubjectCode(),
+                        s.getSubjects().getName()
+                );
+                subList.add(sub);
+            }
+            log.info("Success mapping subject to course");
+            courseResponseDTO.setSubjectlist(subList);
+            return courseResponseDTO;
+        } catch (Exception e) {
+            log.error("Error fetching course details : {} ", e.getMessage());
+            throw new HandleException("Something went wrong during fetching course details");
+        }
     }
 
+    //TODO: need to fix course update issue
     @Override
     public String uploadCourse(CourseEditDTO courseEditDTO, long courseId) {
-        final Course c = EntityUtils.getEntityDetails(courseId,courseRepo,"Course");
+        log.info("Update course id:{} details", courseId);
+        if (courseEditDTO == null) {
+            throw new NotFoundException("Course details not provide");
+        }
+        final Course course = EntityUtils.getEntityDetails(courseId, courseRepo, "Course");
+        School  school = EntityUtils.getEntityDetails(courseEditDTO.getSchoolId(), schoolRepo, "School");
         try {
-            final Course convetedStuent = courseMapper.courseEditDTOtoCourse(courseEditDTO);
-            courseRepo.save(convetedStuent);
+//            final Course updatedCourse = courseMapper.courseEditDTOtoCourse(courseEditDTO);
+            course.setName(courseEditDTO.getName());
+            course.setCategory(courseEditDTO.getCategory());
+            course.setDescription(courseEditDTO.getDescription());
+            course.setTotalCredit(courseEditDTO.getTotalCredit());
+            course.setTotalHours(courseEditDTO.getTotalHours());
+            course.setCourseType(courseEditDTO.getCourseType());
+            course.setFees(courseEditDTO.getFees());
+            course.setDuration(courseEditDTO.getDuration());
+            course.setMedium(courseEditDTO.getMedium());
+            course.setSchool(school);
+
+            courseRepo.save(course);
             return "Course " + courseId + " Successfully updated";
-        }catch (Exception e){
+        } catch (Exception e) {
+            log.error("Error while updating course Details : {}", e.getMessage());
             throw new HandleException("Something went wrong during upload Course details");
         }
 
@@ -108,19 +129,18 @@ public class CourserServiceImpl implements ICourseService {
 
     @Override
     public String deleteStudent(long courseId) {
-        final Course c = EntityUtils.getEntityDetails(courseId,courseRepo,"Course");
+        final Course course = EntityUtils.getEntityDetails(courseId, courseRepo, "Course");
         try {
-            c.setActive_statue(false);
-            courseRepo.save(c);
+            courseRepo.deleteById(course.getCourseId());
             return "Course " + courseId + " Successfully Deleted";
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new HandleException("Something went wrong during deleting course details");
         }
     }
 
     @Override
     public Page<CourseResponseDTO> getAllCourse(Pageable pageable) {
-        try{
+        try {
             Page<Course> courses = courseRepo.findAll(pageable);
             //above did that same process but approach is different;
             return courses.map(course -> {
@@ -129,6 +149,10 @@ public class CourserServiceImpl implements ICourseService {
                 School school = EntityUtils.getEntityDetails(course.getSchool().getSchoolID(), schoolRepo, "School");
                 courseResponseDTO.setSchoolCode(school.getSchoolCode());
                 courseResponseDTO.setSchoolName(school.getSchoolName());
+                courseResponseDTO.setCreateBy(course.getCreateBy());
+                courseResponseDTO.setCreatedDate(course.getCreatedDate());
+                courseResponseDTO.setModifiedBy(course.getModifiedBy());
+                courseResponseDTO.setModifiedData(course.getModifiedData());
                 // Fetch subject assignments and map to response DTO
                 List<SubjectAssignToCourse> subjectList = subjectAssignRepo.findAllByCourse(course);
                 List<SubjectAssignResponseDTO> subList = subjectList.stream()
@@ -141,9 +165,27 @@ public class CourserServiceImpl implements ICourseService {
                 courseResponseDTO.setSubjectlist(subList);
                 return courseResponseDTO;
             });
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new HandleException("Something went wrong during fetching course details");
         }
 
+    }
+
+    @Override
+    public List<CourseResponseForDrop> getAll() {
+        List<Course> courses = courseRepo.findAll();
+        List<CourseResponseForDrop> courseResponseForDrops = new ArrayList<>();
+
+        for (Course c : courses) {
+            CourseResponseForDrop courseResponseForDrop = new CourseResponseForDrop();
+            // Assuming you have methods in Course and CourseResponseForDrop classes to retrieve necessary data
+            courseResponseForDrop.setCourseId(c.getCourseId());
+            courseResponseForDrop.setCode(c.getCode());
+            courseResponseForDrop.setName(c.getName());
+            // Set other properties as needed
+
+            courseResponseForDrops.add(courseResponseForDrop);
+        }
+        return courseResponseForDrops;
     }
 }

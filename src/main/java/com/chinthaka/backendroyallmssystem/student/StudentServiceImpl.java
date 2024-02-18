@@ -2,17 +2,27 @@ package com.chinthaka.backendroyallmssystem.student;
 
 
 import com.chinthaka.backendroyallmssystem.address.Address;
+import com.chinthaka.backendroyallmssystem.batch.BatchRepo;
+import com.chinthaka.backendroyallmssystem.course.CourseRepo;
 import com.chinthaka.backendroyallmssystem.excaption.AlreadyExistException;
 import com.chinthaka.backendroyallmssystem.excaption.HandleException;
 import com.chinthaka.backendroyallmssystem.excaption.NotFoundException;
 import com.chinthaka.backendroyallmssystem.student.request.StudentDTO;
 import com.chinthaka.backendroyallmssystem.student.response.StudentResponseDTO;
+import com.chinthaka.backendroyallmssystem.studentEnrollment.StudentEnroll;
+import com.chinthaka.backendroyallmssystem.studentEnrollment.StudentEnrollMapper;
+import com.chinthaka.backendroyallmssystem.studentEnrollment.StudentEnrollRepo;
+import com.chinthaka.backendroyallmssystem.studentEnrollment.response.StudentEnrollResponseDTO;
 import com.chinthaka.backendroyallmssystem.utils.EntityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +31,10 @@ public class StudentServiceImpl implements IStudentService {
 
     private final StudentRepo studentRepo;
     private final StudentMapper studentMapper;
+    private final BatchRepo batchRepo;
+    private final CourseRepo courseRepo;
+    private final StudentEnrollRepo studentEnrollRepo;
+    private final StudentEnrollMapper studentEnrollMapper;
 
     @Override
     @Transactional
@@ -69,15 +83,16 @@ public class StudentServiceImpl implements IStudentService {
     @Override
     public StudentResponseDTO studentFindById(long studentId) {
         Student student = EntityUtils.getEntityDetails(studentId, studentRepo, "Student");
-        return studentMapper.studentToStudentResponseDTO(student);
+        return getStudentResponseDTO(student);
     }
 
     @Override
     public String uploadStudentById(StudentDTO studentDTO, long studentId) {
         Student student = EntityUtils.getEntityDetails(studentId, studentRepo, "Student");
         try {
-            final Student convetedStuent = studentMapper.studentSaveDTOtoEntity(studentDTO);
-            studentRepo.save(convetedStuent);
+            final Student convertedStudent = studentMapper.studentSaveDTOtoEntity(studentDTO);
+            convertedStudent.setId(studentId);
+            studentRepo.save(convertedStudent);
             return "Student " + studentId + " Successfully updated";
         } catch (Exception e) {
             throw new HandleException("Something went wrong during upload student details");
@@ -89,12 +104,88 @@ public class StudentServiceImpl implements IStudentService {
     public String deleteStudent(long studentId) {
         Student student = EntityUtils.getEntityDetails(studentId, studentRepo, "Student");
         try {
-            student.setActiveStatus(false);
-            studentRepo.save(student);
+//            student.setActiveStatus(false);
+            studentRepo.deleteById(studentId);
+//            studentRepo.save(student);
             return "Student " + studentId + " Successfully Deleted";
         } catch (Exception e) {
+            log.error("Error while updating student: {}",e.getMessage());
             throw new HandleException("Something went wrong during deleting student details");
         }
     }
+
+    @Override
+    public Page<StudentResponseDTO> getAllSubject(Pageable pageable) {
+        log.info("Student Pagination : {}", pageable);
+        try {
+            Page<Student> studentPage = studentRepo.findAll(pageable);
+
+            return studentPage.map(student -> {
+                StudentResponseDTO studentResponseDTO = new StudentResponseDTO();
+                studentResponseDTO.setId(student.getId());
+                studentResponseDTO.setFirstName(student.getFirstName());
+                studentResponseDTO.setLastName(student.getLastName());
+                studentResponseDTO.setNic(student.getNic());
+                studentResponseDTO.setMobileNo(student.getMobileNo());
+                studentResponseDTO.setGender(student.getGender());
+                studentResponseDTO.setDob(student.getDob());
+                studentResponseDTO.setActiveStatus(student.isActiveStatus());
+                studentResponseDTO.setImageUrl(student.getImageUrl());
+                studentResponseDTO.setAddress(student.getAddress());
+
+                StudentEnroll enrollData = studentEnrollRepo.findByStudent(student);
+
+                if (enrollData != null) {
+                    StudentEnrollResponseDTO enrollDetails = new StudentEnrollResponseDTO(
+                            enrollData.getEnrollId(),
+                            enrollData.getBatch().getBatchId(),
+                            enrollData.getBatch().getCode(),
+                            enrollData.getCourse().getCourseId(),
+                            enrollData.getCourse().getName(),
+                            enrollData.getCreatedDate() // Assuming enrollDate is the correct field name
+                    );
+                    studentResponseDTO.setEnroll(enrollDetails);
+                }
+
+                return studentResponseDTO;
+            });
+        } catch (Exception e) {
+            log.error("Error while fetching student details: {}", e.getMessage());
+            throw new HandleException("Error while fetching student details");
+        }
+    }
+
+    @Override
+    public StudentResponseDTO studentFindByNic(String nic) {
+        if (nic.isBlank()){
+            throw new NotFoundException("NIC number is missing");
+        }
+
+        Student student = studentRepo.findByNic(nic);
+        if (Objects.isNull(student)){
+            throw new NotFoundException("Student not found");
+        };
+        return getStudentResponseDTO(student);
+    }
+
+    private StudentResponseDTO getStudentResponseDTO(Student student) {
+        StudentEnroll enrollData = studentEnrollRepo.findByStudent(student);
+
+        StudentEnrollResponseDTO enrollDetails = null;
+        if (Objects.nonNull(enrollData)) {
+            enrollDetails = new StudentEnrollResponseDTO(
+                    enrollData.getEnrollId(),
+                    enrollData.getBatch().getBatchId(),
+                    enrollData.getBatch().getCode(),
+                    enrollData.getCourse().getCourseId(),
+                    enrollData.getCourse().getName(),
+                    enrollData.getCreatedDate()
+            );
+        }
+        StudentResponseDTO st = studentMapper.studentToStudentResponseDTO(student);
+        st.setEnroll(enrollDetails);
+        return st;
+    }
+
 
 }

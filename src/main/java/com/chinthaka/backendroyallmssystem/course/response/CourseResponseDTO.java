@@ -1,17 +1,16 @@
 package com.chinthaka.backendroyallmssystem.course.response;
 
-import com.chinthaka.backendroyallmssystem.batch.Batch;
-import com.chinthaka.backendroyallmssystem.batch.response.BatchResponseDTO;
+
 import com.chinthaka.backendroyallmssystem.course.Category;
 import com.chinthaka.backendroyallmssystem.course.Medium;
 import com.chinthaka.backendroyallmssystem.course.Type;
 import com.chinthaka.backendroyallmssystem.school.School;
-import com.chinthaka.backendroyallmssystem.subjectAssign.SubjectAssignToCourse;
 import com.chinthaka.backendroyallmssystem.subjectAssign.response.SubjectAssignResponseDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -32,6 +31,10 @@ public class CourseResponseDTO {
     private Medium medium;
     private String schoolName;
     private String schoolCode;
+    private String createBy;
+    private LocalDateTime createdDate;
+    private String modifiedBy;
+    private LocalDateTime modifiedData;
     private List<SubjectAssignResponseDTO> subjectlist;
 
     public void setSchool(School school) {

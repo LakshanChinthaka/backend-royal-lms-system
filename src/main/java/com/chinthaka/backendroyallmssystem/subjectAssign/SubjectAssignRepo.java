@@ -13,4 +13,13 @@ public interface SubjectAssignRepo extends JpaRepository<SubjectAssignToCourse,L
     List<SubjectAssignToCourse> findAllByCourse(Course course);
 
     SubjectAssignToCourse findByCourseAndSubjects(Course course, Subject subjects);
+
+    void deleteAllBySubjects(Subject subject);
+
+    boolean existsBySubjects(Subject subject);
+
+    boolean existsAllByCourseAndSubjects(Course course, Subject subjects);
+
+
+//    boolean existsAllByCourseAndSubjects(Course course, Subject subjects);
 }

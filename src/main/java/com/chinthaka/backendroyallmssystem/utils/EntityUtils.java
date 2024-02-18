@@ -29,6 +29,9 @@ public class EntityUtils {
 
     //get entity details
     public static <T> T getEntityDetails(long id, JpaRepository<T, Long> repository, String entityName) {
+        if (id <= 0){
+            throw new NotFoundException("Id can not be null");
+        }
         log.info("Start fetching {} entity details ", entityName);
         Supplier<NotFoundException> exceptionSupplier =
                 () -> new NotFoundException(entityName + " Id - " + id + " not found");

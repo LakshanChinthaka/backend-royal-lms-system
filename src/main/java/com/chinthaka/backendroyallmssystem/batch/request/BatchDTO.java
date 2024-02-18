@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 public class BatchDTO {
     private Long batchId;
     private String code;
-    private long courseId;
+        private long courseId;
     private long schoolId;
 
 }

@@ -5,6 +5,11 @@ import com.chinthaka.backendroyallmssystem.student.request.StudentDTO;
 import com.chinthaka.backendroyallmssystem.student.response.StudentResponseDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
 public interface StudentMapper {
@@ -17,4 +22,14 @@ public interface StudentMapper {
 
     StudentResponseDTO studentToStudentResponseDTO(Student student);
 
+    //Pagination
+    default Page<StudentResponseDTO> pageStudentToStudentResponseDTO(Page<Student> student) {
+        List<StudentResponseDTO> studentResponseDTOList = student.getContent()
+                .stream()
+                .map(this::studentToStudentResponseDTO)
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(studentResponseDTOList,
+                student.getPageable(), student.getTotalElements());
+    }
 }

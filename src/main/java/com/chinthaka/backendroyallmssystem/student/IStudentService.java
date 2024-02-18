@@ -3,6 +3,9 @@ package com.chinthaka.backendroyallmssystem.student;
 
 import com.chinthaka.backendroyallmssystem.student.request.StudentDTO;
 import com.chinthaka.backendroyallmssystem.student.response.StudentResponseDTO;
+import com.chinthaka.backendroyallmssystem.subjectAssign.response.SubjectAssignResponseDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface IStudentService {
 
@@ -10,10 +13,13 @@ public interface IStudentService {
 
     String uploadImage(String imageUrl, long studentId);
 
-    StudentResponseDTO studentFindById(long studentId);
+    StudentResponseDTO studentFindById(long nic);
 
     String uploadStudentById(StudentDTO studentDTO, long studentId);
 
     String deleteStudent(long studentId);
 
+    Page<StudentResponseDTO> getAllSubject(Pageable pageable);
+
+    StudentResponseDTO studentFindByNic(String nic);
 }

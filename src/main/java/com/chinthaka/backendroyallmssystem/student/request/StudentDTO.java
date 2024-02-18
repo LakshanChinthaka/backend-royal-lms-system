@@ -2,12 +2,10 @@ package com.chinthaka.backendroyallmssystem.student.request;
 
 import com.chinthaka.backendroyallmssystem.address.Address;
 import com.chinthaka.backendroyallmssystem.gender.Gender;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import lombok.ToString;
 
-@Getter
-@Setter
+@Data
 @ToString
 public class StudentDTO {
 

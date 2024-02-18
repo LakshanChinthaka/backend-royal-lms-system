@@ -2,18 +2,20 @@ package com.chinthaka.backendroyallmssystem.subjectAssign;
 
 import com.chinthaka.backendroyallmssystem.course.Course;
 import com.chinthaka.backendroyallmssystem.course.CourseRepo;
+import com.chinthaka.backendroyallmssystem.excaption.AlreadyExistException;
 import com.chinthaka.backendroyallmssystem.excaption.HandleException;
 import com.chinthaka.backendroyallmssystem.excaption.NotFoundException;
 import com.chinthaka.backendroyallmssystem.subject.Subject;
 import com.chinthaka.backendroyallmssystem.subject.SubjectRepo;
 import com.chinthaka.backendroyallmssystem.subjectAssign.request.SubjectAssignToCourseDTO;
+import com.chinthaka.backendroyallmssystem.subjectAssign.response.SubjectAssignResponseDTO;
 import com.chinthaka.backendroyallmssystem.utils.EntityUtils;
-import com.fasterxml.jackson.core.JsonToken;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -26,29 +28,29 @@ public class SubjectAssignServiceImpl implements ISubjectAssignService {
 
     @Override
     public String assignSubjectToCourse(SubjectAssignToCourseDTO subjectAssignToCourseDTO) {
+
+        if (subjectAssignToCourseDTO.getSubjectId() < 0){
+            throw new NotFoundException("Subject are not provided ");
+        }
         Course course = EntityUtils.getEntityDetails(
                 subjectAssignToCourseDTO.getCourseId(), courseRepo, "Course");
-        if (subjectAssignToCourseDTO.getSubjectIds().isEmpty()){
-            throw new NotFoundException("Subjects are not provided ");
-        }
-        for (Long stId : subjectAssignToCourseDTO.getSubjectIds()) {
-            if (!EntityUtils.isEntityExist(stId, subjectRepo)) {
-                throw new NotFoundException("Subject id: " + stId + " not found");
-            }
+
+        Subject subject = EntityUtils.getEntityDetails(subjectAssignToCourseDTO.getSubjectId(),subjectRepo,"Subject");
+        if (subjectAssignRepo.existsAllByCourseAndSubjects(course,subject)){
+            throw new AlreadyExistException("Subject Already Assigned to Course id: "+subjectAssignToCourseDTO.getCourseId());
         }
        try {
            log.info("Start subject fetch subject from database");
-           List<Subject> subjectList = subjectRepo.findAllById(subjectAssignToCourseDTO.getSubjectIds());
-           for (Subject s : subjectList) {
-               SubjectAssignToCourse sc = new SubjectAssignToCourse();
-               sc.setCourse(course);
-               sc.setSubjects(s);
-               subjectAssignRepo.save(sc);
-           }
+           SubjectAssignToCourse sub = new SubjectAssignToCourse(
+                   0L,
+                   subject,
+                   course
+           );
+           subjectAssignRepo.save(sub);
            return "Subject Successfully Assigned";
        }catch (Exception e){
-           log.error("Error while subject assign to course {}", e.getMessage());
-           throw new HandleException("Something went wrong subject Assign to course");
+           log.error("Error while subject assign to course: {}", e.getMessage());
+           throw new HandleException("Something went wrong subject Assign to course: ");
        }
     }
 
@@ -69,5 +71,28 @@ public class SubjectAssignServiceImpl implements ISubjectAssignService {
           log.error("Error while deleting assign subject: {} ",e.getMessage());
           throw new NotFoundException("Something went wrong while deleting assign subject");
       }
+    }
+
+    @Override
+    public  List<SubjectAssignResponseDTO> getSubjectByCourse(long courseId) {
+        Course course = EntityUtils.getEntityDetails(courseId, courseRepo, "Course");
+        try {
+            List<SubjectAssignToCourse> subjectList = subjectAssignRepo.findAllByCourse(course);
+            return subjectList.stream().map(subject -> {
+                SubjectAssignResponseDTO s = new SubjectAssignResponseDTO();
+                s.setAssignId(subject.getAssignId());
+                s.setSubjectId(subject.getSubjects().getSubjectId());
+                s.setCode(subject.getSubjects().getSubjectCode());
+                s.setSubject(subject.getSubjects().getName());
+                s.setCreateBy(subject.getCreateBy());
+                s.setCreatedDate(subject.getCreatedDate());
+                s.setModifiedBy(subject.getModifiedBy());
+                s.setModifiedData(subject.getModifiedData());
+                return s;
+            }).collect(Collectors.toList()); // Collect the mapped objects into a list
+        } catch (Exception e) {
+            log.error("Error while getting assigned subjects: {}", e.getMessage());
+            throw new NotFoundException("Something went wrong while fetching assigned subjects");
+        }
     }
 }
