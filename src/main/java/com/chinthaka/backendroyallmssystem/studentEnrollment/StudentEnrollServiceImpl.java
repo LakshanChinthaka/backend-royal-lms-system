@@ -32,8 +32,8 @@ public class StudentEnrollServiceImpl implements IStudentEnrollService {
                 studentEnrollDTO.getBatchId(), batchRepo, "Batch");
         Student student = EntityUtils.getEntityDetails(
                 studentEnrollDTO.getStudentId(), studentRepo, "Student");
-        Course course = EntityUtils.getEntityDetails(
-                studentEnrollDTO.getStudentId(), courseRepo, "Course");
+//        Course course = EntityUtils.getEntityDetails(
+//                studentEnrollDTO.getStudentId(), courseRepo, "Course");
         if (studentEnrollRepo.existsByStudent(student)) {
             throw new AlreadyExistException(
                     "Student id: " + studentEnrollDTO.getStudentId() +
@@ -43,8 +43,8 @@ public class StudentEnrollServiceImpl implements IStudentEnrollService {
             final StudentEnroll studentEnroll = new StudentEnroll(
 //                    0L,
                     student,
-                    batch,
-                    course
+                    batch
+//                    course
             );
             studentEnrollRepo.save(studentEnroll);
             return "Student id: " + studentEnrollDTO.getStudentId() + " Successfully Enrolled";

@@ -20,6 +20,8 @@ public interface SubjectAssignRepo extends JpaRepository<SubjectAssignToCourse,L
 
     boolean existsAllByCourseAndSubjects(Course course, Subject subjects);
 
+    List<SubjectAssignToCourse> findAllBySubjects(Subject subject);
+
 
 //    boolean existsAllByCourseAndSubjects(Course course, Subject subjects);
 }

@@ -5,6 +5,7 @@ import com.chinthaka.backendroyallmssystem.excaption.HandleException;
 import com.chinthaka.backendroyallmssystem.excaption.NotFoundException;
 import com.chinthaka.backendroyallmssystem.subject.request.SubjectDTO;
 import com.chinthaka.backendroyallmssystem.subjectAssign.SubjectAssignRepo;
+import com.chinthaka.backendroyallmssystem.subjectAssign.SubjectAssignToCourse;
 import com.chinthaka.backendroyallmssystem.utils.EntityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +14,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 
 @Service
@@ -61,11 +65,17 @@ public class SubjectServiceImpl implements ISubjectService {
         log.info("Start delete subject method subject ID: {}", subjectId);
         Subject subject = EntityUtils.getEntityDetails(subjectId, subjectRepo, "Subject");
         try {
-            subjectAssignRepo.deleteAllBySubjects(subject);
-            if (subjectAssignRepo.existsBySubjects(subject)) {
-                subjectRepo.deleteById(subjectId);
+
+            List<Long> subjectIds = new ArrayList<>();
+            List<SubjectAssignToCourse> list = subjectAssignRepo.findAllBySubjects(subject);
+            for (SubjectAssignToCourse s : list) {
+                subjectIds.add(s.getSubjects().getSubjectId());
             }
-            throw new HandleException("Subject id " + subjectId + " has associated records and cannot be deleted");
+            subjectAssignRepo.deleteAll(list);
+
+            subjectRepo.deleteById(subjectId);
+
+            return "Delete Successfully";
 
         } catch (Exception e) {
             log.error("Error while deleting subject details: {}", e.getMessage());

@@ -12,4 +12,5 @@ public interface StudentEnrollRepo extends JpaRepository<StudentEnroll,Long> {
 
     StudentEnroll findByStudent(Student student);
 
+    void deleteByStudent(long studentId);
 }

@@ -42,4 +42,7 @@ public class BaseUser extends Auditor {
     @Column(name = "profile_url")
     private String imageUrl;
 
+    @Column(name = "personal_email")
+    private String email;
+
 }

@@ -35,12 +35,12 @@ public class StudentEnroll extends Auditor {
     private Student student;
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "batch_id",nullable = false)
     private Batch batch;
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "course_id",nullable = false)
     private Course course;
 
@@ -48,5 +48,10 @@ public class StudentEnroll extends Auditor {
         this.student = student;
         this.batch=batch;
         this.course = course;
+    }
+
+    public StudentEnroll(Student student, Batch batch) {
+        this.student = student;
+        this.batch=batch;
     }
 }

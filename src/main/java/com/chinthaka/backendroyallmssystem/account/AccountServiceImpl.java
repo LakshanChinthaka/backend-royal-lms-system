@@ -88,14 +88,14 @@ public class AccountServiceImpl implements IAccountService{
             throw new HandleException("User not selected");
         }
         if (accountCreateRequest.getUserId() <= 0 || accountCreateRequest.getUsername().isEmpty()
-                || accountCreateRequest.getPassword().isEmpty()){
+                || accountCreateRequest.getPassword().isEmpty() || accountCreateRequest.getRole().isEmpty()){
             throw new HandleException("All the details required");
         }
         if (userRepository.existsByUsername(accountCreateRequest.getUsername())) {
             throw new AlreadyExistException("Username already taken!");
         }
-        if (userRepository.existsByUsernameAndUserId(accountCreateRequest.getUsername(), accountCreateRequest.getUserId())) {
-            throw new AlreadyExistException("Username have already a account!");
+        if (userRepository.existsByUserId(accountCreateRequest.getUserId())) {
+            throw new AlreadyExistException("User have already an account!");
         }
 
         // Creating a new user object

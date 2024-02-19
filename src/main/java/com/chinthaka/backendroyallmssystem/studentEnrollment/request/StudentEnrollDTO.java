@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 public class StudentEnrollDTO {
     private long batchId;
     private long studentId;
-    private long courseId;
+//    private long courseId;
 }

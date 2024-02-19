@@ -1,13 +1,9 @@
 package com.chinthaka.backendroyallmssystem.student;
 
-import com.chinthaka.backendroyallmssystem.course.response.CourseResponseDTO;
-import com.chinthaka.backendroyallmssystem.employee.Employee;
+
 import com.chinthaka.backendroyallmssystem.employee.EmployeeRepo;
-import com.chinthaka.backendroyallmssystem.employee.IEmployeeService;
-import com.chinthaka.backendroyallmssystem.excaption.NotFoundException;
 import com.chinthaka.backendroyallmssystem.student.request.StudentDTO;
 import com.chinthaka.backendroyallmssystem.student.response.StudentResponseDTO;
-import com.chinthaka.backendroyallmssystem.subjectAssign.response.SubjectAssignResponseDTO;
 import com.chinthaka.backendroyallmssystem.utils.StandardResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,8 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Objects;
 
 
 @RestController
@@ -92,21 +86,11 @@ public class StudentController {
 
     @GetMapping(value = "/find-by-nic",params = {"nic", "role"})
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<StandardResponse> studentFindByNic(@RequestParam("nic") String nic,
+    public ResponseEntity<StandardResponse> findByStudentAndEmpByNic(@RequestParam("nic") String nic,
                                                              @RequestParam("role")String role){
-
-        if (Objects.equals(role, "STUDENT")){
-            StudentResponseDTO response = studentService.studentFindByNic(nic);
+        log.info("GET request received on /api/v1/student/find-by-nic");
+        Object response = studentService.findByStudentAndEmpByNic(nic,role);
             return new ResponseEntity<>(
                     new StandardResponse(200,"Success",response), HttpStatus.OK);
-        }else {
-            Employee employee = employeeRepo.findByNic(nic);
-            if (Objects.nonNull(employee)){
-                return new ResponseEntity<>(
-                        new StandardResponse(200,"Success",employee), HttpStatus.OK);
-            }else {
-                throw new NotFoundException("Employee not found");
-            }
-        }
     }
 }

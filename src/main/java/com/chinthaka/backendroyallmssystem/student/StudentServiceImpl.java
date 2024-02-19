@@ -4,6 +4,8 @@ package com.chinthaka.backendroyallmssystem.student;
 import com.chinthaka.backendroyallmssystem.address.Address;
 import com.chinthaka.backendroyallmssystem.batch.BatchRepo;
 import com.chinthaka.backendroyallmssystem.course.CourseRepo;
+import com.chinthaka.backendroyallmssystem.employee.Employee;
+import com.chinthaka.backendroyallmssystem.employee.EmployeeRepo;
 import com.chinthaka.backendroyallmssystem.excaption.AlreadyExistException;
 import com.chinthaka.backendroyallmssystem.excaption.HandleException;
 import com.chinthaka.backendroyallmssystem.excaption.NotFoundException;
@@ -35,6 +37,7 @@ public class StudentServiceImpl implements IStudentService {
     private final CourseRepo courseRepo;
     private final StudentEnrollRepo studentEnrollRepo;
     private final StudentEnrollMapper studentEnrollMapper;
+    private final EmployeeRepo employeeRepo;
 
     @Override
     @Transactional
@@ -100,19 +103,44 @@ public class StudentServiceImpl implements IStudentService {
 
     }
 
-    @Override
-    public String deleteStudent(long studentId) {
-        Student student = EntityUtils.getEntityDetails(studentId, studentRepo, "Student");
-        try {
-//            student.setActiveStatus(false);
-            studentRepo.deleteById(studentId);
-//            studentRepo.save(student);
-            return "Student " + studentId + " Successfully Deleted";
-        } catch (Exception e) {
-            log.error("Error while updating student: {}",e.getMessage());
-            throw new HandleException("Something went wrong during deleting student details");
+//    @Override
+//    @Transactional
+//    public String deleteStudent(long studentId) {
+//        Student student = EntityUtils.getEntityDetails(studentId, studentRepo, "Student");
+//        try {
+//            if (studentEnrollRepo.existsByStudent(student)){
+//                long enroll = studentEnrollRepo.findByStudent(student).getEnrollId();
+//                studentEnrollRepo.deleteById(enroll);
+//            }
+//            studentRepo.deleteById(studentId);
+//            return "Student " + studentId + " Successfully Deleted";
+//        } catch (Exception e) {
+//            log.error("Error while updating student: {}",e.getMessage());
+//            throw new HandleException("Something went wrong during deleting student details");
+//        }
+//    }
+@Override
+@Transactional
+public String deleteStudent(long studentId) {
+    // Retrieve the student entity
+    Student student = EntityUtils.getEntityDetails(studentId, studentRepo, "Student");
+    try {
+        // Check if there are associated StudentEnroll records
+        if (studentEnrollRepo.existsByStudent(student)) {
+            // Retrieve the enrollId of the first associated StudentEnroll record
+            long enrollId = studentEnrollRepo.findByStudent(student).getEnrollId();
+            // Delete the associated StudentEnroll record
+            studentEnrollRepo.deleteById(enrollId);
         }
+        // Delete the student entity
+        studentRepo.deleteById(studentId);
+        return "Student " + studentId + " Successfully Deleted";
+    } catch (Exception e) {
+        log.error("Error while updating student: {}", e.getMessage());
+        throw new HandleException("Something went wrong during deleting student details");
     }
+}
+
 
     @Override
     public Page<StudentResponseDTO> getAllSubject(Pageable pageable) {
@@ -187,5 +215,23 @@ public class StudentServiceImpl implements IStudentService {
         return st;
     }
 
-
+    @Override
+    public Object findByStudentAndEmpByNic(String nic, String role) {
+        if (!role.isEmpty()){
+            if (Objects.equals(role,"STUDENT")){
+                Student student = studentRepo.findByNic(nic);
+                if (Objects.isNull(student)){
+                   throw new NotFoundException("Student not found");
+                }
+                return student;
+            }else {
+                Employee emp = employeeRepo.findByNic(nic);
+                if (Objects.equals(emp,null)){
+                    throw new NotFoundException("Employee not found");
+                }
+                return emp;
+            }
+        }
+        throw new NotFoundException("First select student or employee");
+    }
 }
