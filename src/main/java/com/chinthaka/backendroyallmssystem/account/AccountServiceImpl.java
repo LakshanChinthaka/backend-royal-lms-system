@@ -82,6 +82,7 @@ public class AccountServiceImpl implements IAccountService{
            if (user.isEmpty()) {
                return Optional.empty();
            }
+           log.info("Logged in user Role: {}",user.get().getRole());
            if (Role.STUDENT.equals(user.get().getRole())){
                if (studentRepo.existsByNic(user.get().getUserNic())){
                    Student student = studentRepo.findByNic(user.get().getUserNic());
