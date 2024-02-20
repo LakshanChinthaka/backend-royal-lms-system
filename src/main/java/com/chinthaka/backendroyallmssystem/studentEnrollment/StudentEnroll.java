@@ -41,7 +41,7 @@ public class StudentEnroll extends Auditor {
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "course_id",nullable = false)
+    @JoinColumn(name = "course_id")
     private Course course;
 
     public StudentEnroll(Student student, Batch batch, Course course) {
@@ -54,4 +54,5 @@ public class StudentEnroll extends Auditor {
         this.student = student;
         this.batch=batch;
     }
+
 }

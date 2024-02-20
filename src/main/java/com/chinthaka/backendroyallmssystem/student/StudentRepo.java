@@ -13,4 +13,5 @@ public interface StudentRepo extends JpaRepository<Student,Long> {
     boolean existsByNic(String nic);
 
     Student findByNic(String nic);
+
 }

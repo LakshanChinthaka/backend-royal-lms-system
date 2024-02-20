@@ -2,7 +2,6 @@ package com.chinthaka.backendroyallmssystem.studentEnrollment;
 
 import com.chinthaka.backendroyallmssystem.batch.Batch;
 import com.chinthaka.backendroyallmssystem.batch.BatchRepo;
-import com.chinthaka.backendroyallmssystem.course.Course;
 import com.chinthaka.backendroyallmssystem.course.CourseRepo;
 import com.chinthaka.backendroyallmssystem.excaption.AlreadyExistException;
 import com.chinthaka.backendroyallmssystem.excaption.HandleException;
@@ -10,9 +9,12 @@ import com.chinthaka.backendroyallmssystem.excaption.NotFoundException;
 import com.chinthaka.backendroyallmssystem.student.Student;
 import com.chinthaka.backendroyallmssystem.student.StudentRepo;
 import com.chinthaka.backendroyallmssystem.studentEnrollment.request.StudentEnrollDTO;
+import com.chinthaka.backendroyallmssystem.studentEnrollment.response.EnrollPaginationDTO;
 import com.chinthaka.backendroyallmssystem.utils.EntityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -43,8 +45,8 @@ public class StudentEnrollServiceImpl implements IStudentEnrollService {
             final StudentEnroll studentEnroll = new StudentEnroll(
 //                    0L,
                     student,
-                    batch
-//                    course
+                    batch,
+                    batch.getCourse()
             );
             studentEnrollRepo.save(studentEnroll);
             return "Student id: " + studentEnrollDTO.getStudentId() + " Successfully Enrolled";
@@ -56,17 +58,44 @@ public class StudentEnrollServiceImpl implements IStudentEnrollService {
 
     @Override
     public String removeStudent(long studentId) {
-        log.info("Start Execute removing student id: {}",studentId);
+        log.info("Start Execute removing student id: {}", studentId);
         Student student = EntityUtils.getEntityDetails(studentId, studentRepo, "Student");
         if (!studentEnrollRepo.existsByStudent(student)) {
             throw new NotFoundException("Student id: " + studentId + "Not found");
         }
         try {
 
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error("Error while removing student from batch {}", e.getMessage());
             throw new HandleException("Something went wrong removing student from batch");
         }
         return null;
+    }
+
+    @Override
+    public Page<EnrollPaginationDTO> getAllStudentByBatch(long batchId, Pageable pageable) {
+        log.info("Start execute getAllStudentByBatchId method {}", batchId);
+        final Batch batch = EntityUtils.getEntityDetails(batchId, batchRepo, "Batch");
+        try {
+            Page<StudentEnroll> enrollPage = studentEnrollRepo.findAllByBatch(batch, pageable);
+            return enrollPage.map(studentEnroll -> {
+                EnrollPaginationDTO e = new EnrollPaginationDTO(
+                        studentEnroll.getEnrollId(),
+                        studentEnroll.getBatch().getBatchId(),
+                        studentEnroll.getStudent().getId(),
+                        studentEnroll.getStudent().getFirstName(),
+                        studentEnroll.getStudent().getLastName(),
+                        EntityUtils.convertToDateTime(studentEnroll.getCreatedDate()),
+                        studentEnroll.getStudent().getNic(),
+                        studentEnroll.getStudent().getGender(),
+                        studentEnroll.getCreateBy()
+                );
+                return e;
+            });
+
+        } catch (Exception e) {
+            log.error("Error while get pageable batch details: {}", e.getMessage());
+            throw new HandleException("Something went wrong while get batch details");
+        }
     }
 }

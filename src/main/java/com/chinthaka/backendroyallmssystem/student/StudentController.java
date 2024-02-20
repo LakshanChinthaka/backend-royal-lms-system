@@ -93,4 +93,13 @@ public class StudentController {
             return new ResponseEntity<>(
                     new StandardResponse(200,"Success",response), HttpStatus.OK);
     }
+
+    @GetMapping(value = "/find-by-email",params = {"nic"})
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<StandardResponse> findEmail(@RequestParam("nic")String nic){
+        log.info("GET request received on /api/v1/student/find-by-email");
+        Object response = studentService.findEmail(nic);
+        return new ResponseEntity<>(
+                new StandardResponse(200,"Success",response), HttpStatus.OK);
+    }
 }

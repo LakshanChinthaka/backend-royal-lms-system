@@ -29,7 +29,7 @@ public class Mail extends Auditor {
     @Column(name = "subject", nullable = false, updatable = false)
     private String Subject;
 
-    @Column(name = "message",nullable = false, updatable = false)
+    @Column(name = "message",nullable = false, updatable = false, length = 3000)
     private String message;
 
     @Column(name = "student_id",nullable = false, updatable = false)

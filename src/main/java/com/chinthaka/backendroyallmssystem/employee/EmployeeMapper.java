@@ -14,4 +14,5 @@ public interface EmployeeMapper {
 
     Employee employeeSaveDTOtoEmployee(EmployeeSaveDTO employeeSaveDTO);
 
+    Object employeeToEmployeeResponseDTO(Employee employee);
 }

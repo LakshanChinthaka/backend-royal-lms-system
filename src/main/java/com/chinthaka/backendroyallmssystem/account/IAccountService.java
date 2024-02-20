@@ -9,4 +9,5 @@ public interface IAccountService {
     Object getCurrentUserDetails();
 
     String registerUser(AccountCreateRequest accountCreateRequest);
+
 }

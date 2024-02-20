@@ -10,4 +10,5 @@ public class AccountCreateRequest {
     private String password;
     private String role;
     private long userId;
+    private String userNic;
 }

@@ -6,6 +6,8 @@ import com.chinthaka.backendroyallmssystem.excaption.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 import java.util.function.Supplier;
 
@@ -38,6 +40,19 @@ public class EntityUtils {
         return repository.findById(id).orElseThrow(exceptionSupplier);
     }
 
+
+//    //get entity by nic
+//    public static <T> T getEntityByNic(String nic, JpaRepository<T, Long> repository, String entityName) {
+//        if (nic.isBlank()){
+//            throw new NotFoundException(entityName+" Nic can not be null");
+//        }
+//        log.info("Start fetching {} entity details ", entityName);
+//        Supplier<NotFoundException> exceptionSupplier =
+//                () -> new NotFoundException(entityName +  " not found");
+//        return repository.findByNic(nic).orElseThrow(exceptionSupplier);
+//    }
+
+
     public static boolean isCourseExist(long courseId, JpaRepository<Course, Long> courseRepo) {
         return courseRepo.existsById(courseId);
     }
@@ -53,6 +68,12 @@ public class EntityUtils {
             log.error("Error checking entity existence: {}", e.getMessage());
             throw new HandleException("Some thing went wrong accessing database ");
         }
+    }
+
+
+    public static String convertToDateTime(LocalDateTime dateTime) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm a");
+        return dateTime.format(formatter);
     }
 
 }

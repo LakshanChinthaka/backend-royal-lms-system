@@ -9,11 +9,14 @@ import com.chinthaka.backendroyallmssystem.excaption.HandleException;
 import com.chinthaka.backendroyallmssystem.excaption.NotFoundException;
 import com.chinthaka.backendroyallmssystem.school.School;
 import com.chinthaka.backendroyallmssystem.school.SchoolRepo;
+import com.chinthaka.backendroyallmssystem.studentEnrollment.StudentEnrollRepo;
 import com.chinthaka.backendroyallmssystem.utils.EntityUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.Objects;
 
 @Service
 @Slf4j
@@ -22,30 +25,47 @@ public class BatchServiceImpl implements IBatchService {
     private final BatchRepo batchRepo;
     private final CourseRepo courseRepo;
     private final SchoolRepo schoolRepo;
+    private final StudentEnrollRepo enrollRepo;
 
-    public BatchServiceImpl(BatchRepo batchRepo, CourseRepo courseRepo, SchoolRepo schoolRepo) {
+    public BatchServiceImpl(BatchRepo batchRepo, CourseRepo courseRepo, SchoolRepo schoolRepo, StudentEnrollRepo enrollRepo) {
         this.batchRepo = batchRepo;
         this.courseRepo = courseRepo;
         this.schoolRepo = schoolRepo;
+        this.enrollRepo = enrollRepo;
     }
 
     @Override
     public BatchResponseDTO getById(long batchId) {
         final Batch batch = EntityUtils.getEntityDetails(batchId, batchRepo, "Batch");
-        return new BatchResponseDTO(
-                batch.getBatchId(),
-                batch.getCode(),
-                batch.getCourse().getName(),
-                batch.getCourse().getCode(),
-                batch.getSchool().getSchoolName(),
-                batch.getSchool().getSchoolCode(),
-                batch.getCreateBy(),
-                batch.getCreatedDate(),
-                batch.getModifiedBy(),
-                batch.getModifiedData(),
-                batch.isActiveStatus()
+        try {
+            int studentCount = 0;
+            //can't use int because, if it no data in db return null but int can't store null value
+            final Integer count = enrollRepo.count(batch);
+            //count is not null then count assign to studentCount
+            if (Objects.nonNull(count)){
+                studentCount = count;
+            }
 
-        );
+            log.info("Batch id: {} has students: {}", batchId, studentCount);
+            System.out.println("Id"+studentCount);
+            return new BatchResponseDTO(
+                    batch.getBatchId(),
+                    batch.getCode(),
+                    batch.getCourse().getName(),
+                    batch.getCourse().getCode(),
+                    batch.getSchool().getSchoolName(),
+                    batch.getSchool().getSchoolCode(),
+                    batch.getCreateBy(),
+                    batch.getCreatedDate(),
+                    batch.getModifiedBy(),
+                    batch.getModifiedData(),
+                    batch.isActiveStatus(),
+                    studentCount
+            );
+        }catch (Exception e){
+            log.error("Error while fetching data: {}",e.getMessage());
+            throw new HandleException("Something went wrong fetching batch data");
+        }
     }
 
     @Override
@@ -109,23 +129,62 @@ public class BatchServiceImpl implements IBatchService {
     }
 
     private Page<BatchResponseDTO> getBatchResponseDTOS(Page<Batch> batchPage) {
-        return batchPage.map(batch -> {
-            BatchResponseDTO bt =new BatchResponseDTO();
-            bt.setBatchId(batch.getBatchId());
-            bt.setCode(batch.getCode());
-            bt.setCourseName(batch.getCourse().getName());
-            bt.setCourseCode(batch.getCourse().getCode());
-            bt.setSchoolName(batch.getSchool().getSchoolName());
-            bt.setSchoolCode(batch.getSchool().getSchoolCode());
-            bt.setCode(batch.getCode());
-            bt.setCreateBy(batch.getCreateBy());
-            bt.setCreatedDate(batch.getCreatedDate());
-            bt.setModifiedBy(batch.getModifiedBy());
-            bt.setModifiedData(batch.getModifiedData());
-            bt.setActiveStatus(batch.isActiveStatus());
 
+        return batchPage.map(batch -> {
+            int studentCount = 0;
+            
+            //can't use int because, if it no data in db return null but int can't store null value
+            final Integer count = enrollRepo.count(batch);
+           
+            //count is not null then count assign to studentCount
+            if (Objects.nonNull(count)){
+                studentCount = count;
+            }
+            
+            log.info("Batch id: {} has students: {}", batch.getBatchId(), studentCount);
+            BatchResponseDTO bt = getBatchResponseDTO(batch, studentCount);
             return bt;
+
         });
     }
+
+    private static BatchResponseDTO getBatchResponseDTO(Batch batch, int studentCount) {
+        BatchResponseDTO bt = new BatchResponseDTO();
+        bt.setBatchId(batch.getBatchId());
+        bt.setCode(batch.getCode());
+        bt.setCourseName(batch.getCourse().getName());
+        bt.setCourseCode(batch.getCourse().getCode());
+        bt.setSchoolName(batch.getSchool().getSchoolName());
+        bt.setSchoolCode(batch.getSchool().getSchoolCode());
+        bt.setCode(batch.getCode());
+        bt.setCreateBy(batch.getCreateBy());
+        bt.setCreatedDate(batch.getCreatedDate());
+        bt.setModifiedBy(batch.getModifiedBy());
+        bt.setModifiedData(batch.getModifiedData());
+        bt.setActiveStatus(batch.isActiveStatus());
+        bt.setCount(studentCount);
+        return bt;
+    }
+
+
+//    private Page<BatchResponseDTO> getBatchResponseDTOS(Page<Batch> batchPage) {
+//
+//        return batchPage.map(batch -> {
+//            BatchResponseDTO bt =new BatchResponseDTO();
+//            bt.setBatchId(batch.getBatchId());
+//            bt.setCode(batch.getCode());
+//            bt.setCourseName(batch.getCourse().getName());
+//            bt.setCourseCode(batch.getCourse().getCode());
+//            bt.setSchoolName(batch.getSchool().getSchoolName());
+//            bt.setSchoolCode(batch.getSchool().getSchoolCode());
+//            bt.setCode(batch.getCode());
+//            bt.setCreateBy(batch.getCreateBy());
+//            bt.setCreatedDate(batch.getCreatedDate());
+//            bt.setModifiedBy(batch.getModifiedBy());
+//            bt.setModifiedData(batch.getModifiedData());
+//            bt.setActiveStatus(batch.isActiveStatus());
+//
+//            return bt;
+//        });
 
 }

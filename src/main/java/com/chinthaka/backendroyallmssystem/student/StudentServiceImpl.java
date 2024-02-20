@@ -1,6 +1,8 @@
 package com.chinthaka.backendroyallmssystem.student;
 
 
+import com.chinthaka.backendroyallmssystem.account.User;
+import com.chinthaka.backendroyallmssystem.account.UserRepo;
 import com.chinthaka.backendroyallmssystem.address.Address;
 import com.chinthaka.backendroyallmssystem.batch.BatchRepo;
 import com.chinthaka.backendroyallmssystem.course.CourseRepo;
@@ -38,6 +40,7 @@ public class StudentServiceImpl implements IStudentService {
     private final StudentEnrollRepo studentEnrollRepo;
     private final StudentEnrollMapper studentEnrollMapper;
     private final EmployeeRepo employeeRepo;
+    private final UserRepo userRepo;
 
     @Override
     @Transactional
@@ -233,5 +236,18 @@ public String deleteStudent(long studentId) {
             }
         }
         throw new NotFoundException("First select student or employee");
+    }
+
+    @Override
+    public Object findEmail(String nic) {
+        Student student = studentRepo.findByNic(nic);
+        if (Objects.isNull(student)){
+            throw new NotFoundException("Student not found");
+        }
+        User user = userRepo.findByUserId(student.getId());
+        if (Objects.isNull(user)){
+            throw new NotFoundException("Student has no account found");
+        }
+        return user;
     }
 }

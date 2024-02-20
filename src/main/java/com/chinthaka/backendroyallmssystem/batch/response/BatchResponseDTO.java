@@ -22,4 +22,5 @@ public class BatchResponseDTO {
     private String modifiedBy;
     private LocalDateTime modifiedData;
     private boolean activeStatus;
+    private int count;
 }

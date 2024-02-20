@@ -3,11 +3,12 @@ package com.chinthaka.backendroyallmssystem.MailSender;
 import com.chinthaka.backendroyallmssystem.MailSender.request.MailSenderDTO;
 import com.chinthaka.backendroyallmssystem.utils.StandardResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,5 +35,15 @@ public class MailController {
         return new ResponseEntity<>(
                 new StandardResponse(200,"Success",response), HttpStatus.OK);
 
+    }
+
+    @GetMapping(value = "/all")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<StandardResponse> getAllMail(
+            @PageableDefault(sort = "mailId",direction = Sort.Direction.DESC) Pageable pageable){
+        log.info("GET request received on /api/v1/mail/all");
+        Page<MailResponseDTO> response = mailService.getAllMail(pageable);
+        return new ResponseEntity<>(
+                new StandardResponse(200,"Success",response), HttpStatus.OK);
     }
 }

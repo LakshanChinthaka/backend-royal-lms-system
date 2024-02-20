@@ -4,6 +4,7 @@ import com.chinthaka.backendroyallmssystem.account.IAccountService;
 import com.chinthaka.backendroyallmssystem.utils.StandardResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,8 +20,6 @@ public class AuthController {
 
     @PostMapping("/authenticate")
     public ResponseEntity<Object> createAuthenticationToken(@RequestBody AuthRequest authenticationRequest) throws Exception {
-        System.out.println(authenticationRequest.getUsername());
-        System.out.println(authenticationRequest.getPassword());
         log.info("Execute Authentication Controller: password:{}, username: {} ",
                 authenticationRequest.getUsername(),authenticationRequest.getUsername());
         Object response = accountService.createAuthenticationToken(authenticationRequest);
@@ -28,8 +27,12 @@ public class AuthController {
     }
 
     @GetMapping("/profile")
-    public ResponseEntity<StandardResponse> getCurrentUserDetails() {
+    public ResponseEntity<?> getCurrentUserDetails() {
+        log.info("GET request received on /profile");
         Object response = accountService.getCurrentUserDetails();
-        return null;
+        log.info("Profile details before return: {}",response.toString());
+        return new ResponseEntity<>(
+                new StandardResponse(200,"Success",response), HttpStatus.OK);
     }
+
 }

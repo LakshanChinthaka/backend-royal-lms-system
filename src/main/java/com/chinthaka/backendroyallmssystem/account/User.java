@@ -32,6 +32,10 @@ public class User extends Auditor {
     @NotNull
     private long userId;
 
+    @Column(name = "user_nic")
+    @NotNull
+    private String userNic;
+
     @Column(name = "password")
     @NotNull
     private String password;

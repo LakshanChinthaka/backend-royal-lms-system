@@ -25,4 +25,6 @@ public interface IStudentService {
     StudentResponseDTO studentFindByNic(String nic);
 
     Object findByStudentAndEmpByNic(String nic, String role);
+
+    Object findEmail(String nic);
 }
