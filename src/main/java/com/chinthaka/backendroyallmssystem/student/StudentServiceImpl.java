@@ -18,6 +18,7 @@ import com.chinthaka.backendroyallmssystem.studentEnrollment.StudentEnrollMapper
 import com.chinthaka.backendroyallmssystem.studentEnrollment.StudentEnrollRepo;
 import com.chinthaka.backendroyallmssystem.studentEnrollment.response.StudentEnrollResponseDTO;
 import com.chinthaka.backendroyallmssystem.utils.EntityUtils;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -199,7 +200,7 @@ public String deleteStudent(long studentId) {
         return getStudentResponseDTO(student);
     }
 
-    private StudentResponseDTO getStudentResponseDTO(Student student) {
+    public StudentResponseDTO getStudentResponseDTO(Student student) {
         StudentEnroll enrollData = studentEnrollRepo.findByStudent(student);
 
         StudentEnrollResponseDTO enrollDetails = null;

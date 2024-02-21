@@ -12,11 +12,11 @@ import com.chinthaka.backendroyallmssystem.role.Role;
 import com.chinthaka.backendroyallmssystem.security.CustomUserDetailsService;
 import com.chinthaka.backendroyallmssystem.security.JwtResponse;
 import com.chinthaka.backendroyallmssystem.security.JwtUtil;
-import com.chinthaka.backendroyallmssystem.student.Student;
-import com.chinthaka.backendroyallmssystem.student.StudentMapper;
-import com.chinthaka.backendroyallmssystem.student.StudentRepo;
+import com.chinthaka.backendroyallmssystem.student.*;
 import com.chinthaka.backendroyallmssystem.student.response.StudentResponseDTO;
+import com.chinthaka.backendroyallmssystem.studentEnrollment.StudentEnroll;
 import com.chinthaka.backendroyallmssystem.studentEnrollment.StudentEnrollRepo;
+import com.chinthaka.backendroyallmssystem.studentEnrollment.response.StudentEnrollResponseDTO;
 import com.chinthaka.backendroyallmssystem.utils.EntityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,6 +49,8 @@ public class AccountServiceImpl implements IAccountService{
     private final UserRepo userRepository;
     private final PasswordEncoder passwordEncoder;
     private final StudentEnrollRepo enrollRepo;
+    private final IStudentService studentService;
+    private final StudentEnrollRepo studentEnrollRepo;
 
     @Override
     public Object createAuthenticationToken(AuthRequest authenticationRequest) throws Exception {
@@ -82,10 +84,16 @@ public class AccountServiceImpl implements IAccountService{
            if (user.isEmpty()) {
                return Optional.empty();
            }
-           log.info("Logged in user Role: {}",user.get().getRole());
-           if (Role.STUDENT.equals(user.get().getRole())){
-               if (studentRepo.existsByNic(user.get().getUserNic())){
-                   Student student = studentRepo.findByNic(user.get().getUserNic());
+
+           String userNic = user.get().getUserNic();
+           Role userRole = user.get().getRole();
+           long userId = user.get().getUserId();
+
+           log.info("Logged in user Role: {}",userRole);
+           if (Role.STUDENT.equals(userRole)){
+               if (studentRepo.existsByNic(userNic)){
+                   StudentResponseDTO student = studentService.studentFindById(userId);
+                   System.out.println(student.toString());
                    log.info("Logged in Student details: {}",student.toString());
                    return student;
                }else {
@@ -93,8 +101,8 @@ public class AccountServiceImpl implements IAccountService{
                }
 
            }else {
-               if (employeeRepo.existsByNic(user.get().getUserNic())){
-                   Employee employee = employeeRepo.findByNic(user.get().getUserNic());
+               if (employeeRepo.existsByNic(userNic)){
+                   Employee employee = employeeRepo.findByNic(userNic);
                   log.info("Logged in Employee details: {}",employee.toString());
                    return employee;
                }else {
@@ -143,5 +151,26 @@ public class AccountServiceImpl implements IAccountService{
 
         userRepository.save(user);
         return "Account successfully created";
+    }
+
+
+
+    private StudentResponseDTO getStudentResponseDTO(Student student) {
+        StudentEnroll enrollData = studentEnrollRepo.findByStudent(student);
+
+        StudentEnrollResponseDTO enrollDetails = null;
+        if (Objects.nonNull(enrollData)) {
+            enrollDetails = new StudentEnrollResponseDTO(
+                    enrollData.getEnrollId(),
+                    enrollData.getBatch().getBatchId(),
+                    enrollData.getBatch().getCode(),
+                    enrollData.getCourse().getCourseId(),
+                    enrollData.getCourse().getName(),
+                    enrollData.getCreatedDate()
+            );
+        }
+        StudentResponseDTO st = studentMapper.studentToStudentResponseDTO(student);
+        st.setEnroll(enrollDetails);
+        return st;
     }
 }
