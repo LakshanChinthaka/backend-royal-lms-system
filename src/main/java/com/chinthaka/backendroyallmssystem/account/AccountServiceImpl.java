@@ -34,7 +34,6 @@ import java.util.Optional;
 
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class AccountServiceImpl implements IAccountService{
 
@@ -51,6 +50,22 @@ public class AccountServiceImpl implements IAccountService{
     private final StudentEnrollRepo enrollRepo;
     private final IStudentService studentService;
     private final StudentEnrollRepo studentEnrollRepo;
+
+    public AccountServiceImpl(AuthenticationManager authenticationManager, JwtUtil jwtUtil, CustomUserDetailsService customUserDetailsService, UserRepo userRepo, StudentRepo studentRepo, StudentMapper studentMapper, EmployeeRepo employeeRepo, EmployeeMapper employeeMapper, UserRepo userRepository, PasswordEncoder passwordEncoder, StudentEnrollRepo enrollRepo, IStudentService studentService, StudentEnrollRepo studentEnrollRepo) {
+        this.authenticationManager = authenticationManager;
+        this.jwtUtil = jwtUtil;
+        this.customUserDetailsService = customUserDetailsService;
+        this.userRepo = userRepo;
+        this.studentRepo = studentRepo;
+        this.studentMapper = studentMapper;
+        this.employeeRepo = employeeRepo;
+        this.employeeMapper = employeeMapper;
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.enrollRepo = enrollRepo;
+        this.studentService = studentService;
+        this.studentEnrollRepo = studentEnrollRepo;
+    }
 
     @Override
     public Object createAuthenticationToken(AuthRequest authenticationRequest) throws Exception {

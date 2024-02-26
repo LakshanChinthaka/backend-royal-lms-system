@@ -32,4 +32,6 @@ public interface StudentMapper {
         return new PageImpl<>(studentResponseDTOList,
                 student.getPageable(), student.getTotalElements());
     }
+
+    Student studentResponseDTOtoStudent(StudentResponseDTO responseDTO);
 }

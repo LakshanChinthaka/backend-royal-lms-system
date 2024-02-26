@@ -3,7 +3,6 @@ package com.chinthaka.backendroyallmssystem.school;
 import com.chinthaka.backendroyallmssystem.school.request.SchoolDTO;
 import com.chinthaka.backendroyallmssystem.school.response.SchoolResponseDTO;
 import com.chinthaka.backendroyallmssystem.utils.StandardResponse;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -13,12 +12,15 @@ import java.util.List;
 
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("api/v1/school")
 @CrossOrigin("http://localhost:5173")
 public class SchoolController {
 
     private final ISchoolService schoolService;
+
+    public SchoolController(ISchoolService schoolService) {
+        this.schoolService = schoolService;
+    }
 
     @PostMapping("/add")
     @PreAuthorize("hasRole('ROLE_ADMIN')")

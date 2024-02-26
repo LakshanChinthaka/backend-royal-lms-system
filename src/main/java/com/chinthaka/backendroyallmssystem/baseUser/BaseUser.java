@@ -15,7 +15,7 @@ public class BaseUser extends Auditor {
     @Id
     @GeneratedValue
     @Column(name = "st_id")
-    private Long id;
+    protected Long id;
 
     @Column(name = "first_name")
     private String firstName;
@@ -39,7 +39,7 @@ public class BaseUser extends Auditor {
     @Column(name = "active_statue")
     private boolean activeStatus = true;
 
-    @Column(name = "profile_url")
+    @Column(name = "profile_url",length = 2000)
     private String imageUrl;
 
     @Column(name = "personal_email")

@@ -34,4 +34,8 @@ public class AssigmentSubmit extends Auditor {
 
     @Column(name = "batchId")
     private long batchId;
+
+    @Column(name = "grade")
+    private String grade;
+
 }

@@ -15,12 +15,15 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequiredArgsConstructor
 @Slf4j
 @RequestMapping("api/v1/subject")
 public class SubjectController {
 
     private final ISubjectService subjectService;
+
+    public SubjectController(ISubjectService subjectService) {
+        this.subjectService = subjectService;
+    }
 
     @PostMapping("/add")
     @PreAuthorize("hasRole('ROLE_ADMIN')")

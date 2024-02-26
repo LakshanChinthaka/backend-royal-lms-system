@@ -1,18 +1,19 @@
-package com.chinthaka.backendroyallmssystem.assignment;
+package com.chinthaka.backendroyallmssystem.assignment.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-import java.util.Date;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AssigmentAddDTO {
+public class AssignmentResposeDTOforStudent {
+    private Long assiId;;
     private String assiCode;
     private long batchId;
     private String assiUrl;
     private String deadLine;
+    private String releaseData;
+    private String grade;
+    private String submitDate;
 }

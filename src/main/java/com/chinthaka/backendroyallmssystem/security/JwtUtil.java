@@ -26,11 +26,13 @@ public class JwtUtil {
         if (userDetails instanceof CustomUserDetails) {
             CustomUserDetails customUserDetails = (CustomUserDetails) userDetails;
             claims.put("role", customUserDetails.getRole().toString());
+            claims.put("id",customUserDetails.getUser().getUserId());
         }
         return createToken(claims, userDetails.getUsername());
 //        return createToken(claims, userDetails.getUsername());
     }
 
+    //crate token
     private String createToken(Map<String, Object> claims, String subject) {
         return Jwts.builder().setClaims(claims).setSubject(subject)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
@@ -61,6 +63,9 @@ public class JwtUtil {
     }
 
     private Claims extractAllClaims(String token) {
-        return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+        return Jwts.parser()
+                .setSigningKey(secret)
+                .parseClaimsJws(token)
+                .getBody();
     }
 }

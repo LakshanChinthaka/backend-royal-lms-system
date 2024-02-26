@@ -31,10 +31,12 @@ public class Batch extends Auditor {
     @Column(name = "active_statue", columnDefinition = "TINYINT default 1")
     private boolean activeStatus;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "course_id")
     private Course course;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "school_id")
     private School school;

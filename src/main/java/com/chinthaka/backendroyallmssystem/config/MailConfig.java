@@ -15,10 +15,17 @@ public class MailConfig {
     @Bean
     JavaMailSender createMailSender(){
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-        mailSender.setHost("smtp.ethereal.email");
-        mailSender.setPort(587);
-        mailSender.setUsername("alvah.heidenreich@ethereal.email");
-        mailSender.setPassword("8HjGDcHUeEZ7Fe6K2t");
+//        mailSender.setHost("smtp.ethereal.email");
+//        mailSender.setPort(587);
+//        mailSender.setUsername("alvah.heidenreich@ethereal.email");
+//        mailSender.setPassword("8HjGDcHUeEZ7Fe6K2t");
+
+        mailSender.setHost("sandbox.smtp.mailtrap.io");
+        mailSender.setPort(2525);
+        mailSender.setUsername("d372c0cbc7d654");
+        mailSender.setPassword("be96dd456d7f2a");
+//        mailSender.set
+
 
         Properties props = mailSender.getJavaMailProperties();
         props.put("mail.smtp.auth", "true");
@@ -27,3 +34,10 @@ public class MailConfig {
         return mailSender;
     }
 }
+//play.mailer {
+//    host = "sandbox.smtp.mailtrap.io"
+//    port = 2525
+//    ssl = no
+//    tls = yes
+//    user = "d372c0cbc7d654"
+//    password = "be96dd456d7f2a"

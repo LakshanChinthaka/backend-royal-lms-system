@@ -19,12 +19,17 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor
 public class SubjectAssignServiceImpl implements ISubjectAssignService {
 
     private final SubjectAssignRepo subjectAssignRepo;
     private final CourseRepo courseRepo;
     private final SubjectRepo subjectRepo;
+
+    public SubjectAssignServiceImpl(SubjectAssignRepo subjectAssignRepo, CourseRepo courseRepo, SubjectRepo subjectRepo) {
+        this.subjectAssignRepo = subjectAssignRepo;
+        this.courseRepo = courseRepo;
+        this.subjectRepo = subjectRepo;
+    }
 
     @Override
     public String assignSubjectToCourse(SubjectAssignToCourseDTO subjectAssignToCourseDTO) {

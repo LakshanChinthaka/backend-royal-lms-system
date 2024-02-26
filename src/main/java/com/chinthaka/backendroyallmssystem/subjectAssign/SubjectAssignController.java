@@ -12,11 +12,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("api/v1/assign")
 public class SubjectAssignController {
 
     private final ISubjectAssignService subjectAssignService;
+
+    public SubjectAssignController(ISubjectAssignService subjectAssignService) {
+        this.subjectAssignService = subjectAssignService;
+    }
 
     @PostMapping("/add")
     @PreAuthorize("hasRole('ROLE_ADMIN')")

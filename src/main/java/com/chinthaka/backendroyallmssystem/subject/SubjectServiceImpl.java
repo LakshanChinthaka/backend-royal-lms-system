@@ -21,13 +21,18 @@ import java.util.Objects;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor
 @Transactional
 public class SubjectServiceImpl implements ISubjectService {
 
     private final SubjectRepo subjectRepo;
     private final SubjectMapper subjectMapper;
     private final SubjectAssignRepo subjectAssignRepo;
+
+    public SubjectServiceImpl(SubjectRepo subjectRepo, SubjectMapper subjectMapper, SubjectAssignRepo subjectAssignRepo) {
+        this.subjectRepo = subjectRepo;
+        this.subjectMapper = subjectMapper;
+        this.subjectAssignRepo = subjectAssignRepo;
+    }
 
 
     @Override

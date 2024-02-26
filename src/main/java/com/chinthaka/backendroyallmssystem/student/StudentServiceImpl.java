@@ -12,14 +12,13 @@ import com.chinthaka.backendroyallmssystem.excaption.AlreadyExistException;
 import com.chinthaka.backendroyallmssystem.excaption.HandleException;
 import com.chinthaka.backendroyallmssystem.excaption.NotFoundException;
 import com.chinthaka.backendroyallmssystem.student.request.StudentDTO;
+import com.chinthaka.backendroyallmssystem.student.request.StudentImageUploadDTO;
 import com.chinthaka.backendroyallmssystem.student.response.StudentResponseDTO;
 import com.chinthaka.backendroyallmssystem.studentEnrollment.StudentEnroll;
 import com.chinthaka.backendroyallmssystem.studentEnrollment.StudentEnrollMapper;
 import com.chinthaka.backendroyallmssystem.studentEnrollment.StudentEnrollRepo;
 import com.chinthaka.backendroyallmssystem.studentEnrollment.response.StudentEnrollResponseDTO;
 import com.chinthaka.backendroyallmssystem.utils.EntityUtils;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,7 +29,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Objects;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class StudentServiceImpl implements IStudentService {
 
@@ -42,6 +40,17 @@ public class StudentServiceImpl implements IStudentService {
     private final StudentEnrollMapper studentEnrollMapper;
     private final EmployeeRepo employeeRepo;
     private final UserRepo userRepo;
+
+    public StudentServiceImpl(StudentRepo studentRepo, StudentMapper studentMapper, BatchRepo batchRepo, CourseRepo courseRepo, StudentEnrollRepo studentEnrollRepo, StudentEnrollMapper studentEnrollMapper, EmployeeRepo employeeRepo, UserRepo userRepo) {
+        this.studentRepo = studentRepo;
+        this.studentMapper = studentMapper;
+        this.batchRepo = batchRepo;
+        this.courseRepo = courseRepo;
+        this.studentEnrollRepo = studentEnrollRepo;
+        this.studentEnrollMapper = studentEnrollMapper;
+        this.employeeRepo = employeeRepo;
+        this.userRepo = userRepo;
+    }
 
     @Override
     @Transactional
@@ -71,21 +80,27 @@ public class StudentServiceImpl implements IStudentService {
     }
 
 
-    @Override
-    public String uploadImage(String imageUrl, long studentId) {
-        Student student = EntityUtils.getEntityDetails(studentId, studentRepo, "Student");
-        System.out.println(student);
-        if (imageUrl == null || imageUrl.trim().isEmpty()) {
-            throw new NotFoundException("Image not found in url");
-        }
-        try {
-            student.setImageUrl(imageUrl);
-            studentRepo.save(student);
-            return "Image upload success";
-        } catch (Exception e) {
-            throw new HandleException("Something went wrong during upload image");
-        }
-    }
+//    @Override
+//    public String uploadImage(String imageUrl, long studentId) {
+////        Student student = EntityUtils.getEntityDetails(studentId, studentRepo, "Student");
+//
+////        System.out.println(profileUrl);
+////        if (profileUrl == null) {
+////            throw new NotFoundException("Image not found in url");
+////        }
+//        try {
+//            studentRepo.uploadProfileUrl(imageUrl,studentId);
+//            String profileUrl = studentRepo.findProfileUrlById(studentId);
+//            if (profileUrl.isBlank()){
+//                return "No upload";
+//            }
+////            student.setImageUrl(imageUrl);
+////            studentRepo.save(student);
+//            return "Image upload success";
+//        } catch (Exception e) {
+//            throw new HandleException("Something went wrong during upload image");
+//        }
+//    }
 
     @Override
     public StudentResponseDTO studentFindById(long studentId) {
@@ -97,6 +112,7 @@ public class StudentServiceImpl implements IStudentService {
     public String uploadStudentById(StudentDTO studentDTO, long studentId) {
         Student student = EntityUtils.getEntityDetails(studentId, studentRepo, "Student");
         try {
+
             final Student convertedStudent = studentMapper.studentSaveDTOtoEntity(studentDTO);
             convertedStudent.setId(studentId);
             studentRepo.save(convertedStudent);
@@ -250,5 +266,21 @@ public String deleteStudent(long studentId) {
             throw new NotFoundException("Student has no account found");
         }
         return user;
+    }
+
+    @Override
+    public String uploadImage(StudentImageUploadDTO imageUploadDTO) {
+        try {
+        studentRepo.uploadProfileUrl(imageUploadDTO.getImageUrl(),imageUploadDTO.getStudentId());
+        String profileUrl = studentRepo.findProfileUrlById(imageUploadDTO.getStudentId());
+        if (profileUrl.isBlank()){
+            return "No upload";
+        }
+//            student.setImageUrl(imageUrl);
+//            studentRepo.save(student);
+        return "Image upload success";
+    } catch (Exception e) {
+        throw new HandleException("Something went wrong during upload image");
+    }
     }
 }

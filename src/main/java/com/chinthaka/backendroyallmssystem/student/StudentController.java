@@ -3,9 +3,9 @@ package com.chinthaka.backendroyallmssystem.student;
 
 import com.chinthaka.backendroyallmssystem.employee.EmployeeRepo;
 import com.chinthaka.backendroyallmssystem.student.request.StudentDTO;
+import com.chinthaka.backendroyallmssystem.student.request.StudentImageUploadDTO;
 import com.chinthaka.backendroyallmssystem.student.response.StudentResponseDTO;
 import com.chinthaka.backendroyallmssystem.utils.StandardResponse;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,15 +18,16 @@ import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@RequiredArgsConstructor
 @Slf4j
 @RequestMapping("api/v1/student")
-//@CrossOrigin("http://localhost:5173")
 public class StudentController {
 
 
     private final IStudentService studentService;
-    private final EmployeeRepo employeeRepo;
+
+    public StudentController(IStudentService studentService) {
+        this.studentService = studentService;
+    }
 
     @PostMapping("/add")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -38,13 +39,12 @@ public class StudentController {
     }
 
 
-    @PutMapping(value = "/upload-image",params = {"imageUrl","id"})
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PutMapping(value = "/upload-image")
+//    @PreAuthorize("hasRole('ROLE_STUDENT')")
     public ResponseEntity<StandardResponse> uploadImage(
-            @RequestParam("imageUrl") String imageUrl,@RequestParam("id") long studentId){
-        System.out.println(imageUrl);
-        System.out.println(studentId);
-        final String response = studentService.uploadImage(imageUrl,studentId);
+            @RequestBody StudentImageUploadDTO imageUploadDTO){
+       log.info("Student profile upload: {}", imageUploadDTO.toString());
+        final String response = studentService.uploadImage(imageUploadDTO);
         return new ResponseEntity<>(
                 new StandardResponse(200,"Success",response), HttpStatus.OK);
     }

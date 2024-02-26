@@ -1,11 +1,8 @@
 package com.chinthaka.backendroyallmssystem.studentEnrollment;
 
-import com.chinthaka.backendroyallmssystem.student.response.StudentResponseDTO;
 import com.chinthaka.backendroyallmssystem.studentEnrollment.request.StudentEnrollDTO;
 import com.chinthaka.backendroyallmssystem.studentEnrollment.response.EnrollPaginationDTO;
-import com.chinthaka.backendroyallmssystem.subjectAssign.request.SubjectAssignToCourseDTO;
 import com.chinthaka.backendroyallmssystem.utils.StandardResponse;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,12 +14,15 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequiredArgsConstructor
 @Slf4j
 @RequestMapping("api/v1/enroll")
 public class StudentEnrollController {
 
     private final IStudentEnrollService enrollService;
+
+    public StudentEnrollController(IStudentEnrollService enrollService) {
+        this.enrollService = enrollService;
+    }
 
     @PostMapping("/add")
     @PreAuthorize("hasRole('ROLE_ADMIN')")

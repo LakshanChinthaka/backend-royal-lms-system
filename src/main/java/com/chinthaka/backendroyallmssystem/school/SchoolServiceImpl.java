@@ -13,11 +13,15 @@ import java.util.List;
 
 
 @Service
-@RequiredArgsConstructor
 public class SchoolServiceImpl implements ISchoolService {
 
     private final SchoolRepo schoolRepo;
     private final SchoolMapper schoolMapper;
+
+    public SchoolServiceImpl(SchoolRepo schoolRepo, SchoolMapper schoolMapper) {
+        this.schoolRepo = schoolRepo;
+        this.schoolMapper = schoolMapper;
+    }
 
     @Override
     public String addSchool(SchoolDTO schoolDTO) {

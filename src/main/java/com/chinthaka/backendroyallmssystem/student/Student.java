@@ -4,6 +4,7 @@ import com.chinthaka.backendroyallmssystem.address.Address;
 import com.chinthaka.backendroyallmssystem.baseUser.BaseUser;
 import com.chinthaka.backendroyallmssystem.studentEnrollment.StudentEnroll;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -23,14 +24,28 @@ import java.util.List;
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "student")
 @DynamicUpdate
+
 public class Student  extends BaseUser {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "address_id")
     private Address address;
 
-    @JsonIgnore
+    @JsonIgnoreProperties("student")
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
     private List<StudentEnroll> enrollments;
+
+//    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) return true;
+//        if (o == null || getClass() != o.getClass()) return false;
+//        Student student = (Student) o;
+//        return id.equals(student.id);
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        return id.hashCode();
+//    }
 
 }

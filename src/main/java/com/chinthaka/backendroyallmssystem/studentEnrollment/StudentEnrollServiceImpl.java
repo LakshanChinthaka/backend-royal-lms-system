@@ -19,13 +19,19 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor
 public class StudentEnrollServiceImpl implements IStudentEnrollService {
 
     private final StudentEnrollRepo studentEnrollRepo;
     private final BatchRepo batchRepo;
     private final StudentRepo studentRepo;
     private final CourseRepo courseRepo;
+
+    public StudentEnrollServiceImpl(StudentEnrollRepo studentEnrollRepo, BatchRepo batchRepo, StudentRepo studentRepo, CourseRepo courseRepo) {
+        this.studentEnrollRepo = studentEnrollRepo;
+        this.batchRepo = batchRepo;
+        this.studentRepo = studentRepo;
+        this.courseRepo = courseRepo;
+    }
 
     @Override
     public String studentEnroll(StudentEnrollDTO studentEnrollDTO) {

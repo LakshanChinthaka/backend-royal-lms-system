@@ -13,10 +13,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequiredArgsConstructor
 @Slf4j
 public class AuthController {
+
     private final IAccountService accountService;
+
+    public AuthController(IAccountService accountService) {
+        this.accountService = accountService;
+    }
 
 
     @PostMapping("/authenticate")

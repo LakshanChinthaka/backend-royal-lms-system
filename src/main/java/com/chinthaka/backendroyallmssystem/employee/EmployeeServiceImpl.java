@@ -1,7 +1,9 @@
 package com.chinthaka.backendroyallmssystem.employee;
 
 import com.chinthaka.backendroyallmssystem.employee.request.EmployeeSaveDTO;
+import com.chinthaka.backendroyallmssystem.employee.request.ImageUploadDTO;
 import com.chinthaka.backendroyallmssystem.employee.response.EmployeeResponseDTO;
+import com.chinthaka.backendroyallmssystem.employee.response.ImageGetDTO;
 import com.chinthaka.backendroyallmssystem.excaption.AlreadyExistException;
 import com.chinthaka.backendroyallmssystem.excaption.HandleException;
 import com.chinthaka.backendroyallmssystem.utils.EntityUtils;
@@ -10,13 +12,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class EmployeeServiceImpl implements IEmployeeService {
 
 
     private final EmployeeRepo employeeRepo;
     private final EmployeeMapper employeeMapper;
+
+    public EmployeeServiceImpl(EmployeeRepo employeeRepo, EmployeeMapper employeeMapper) {
+        this.employeeRepo = employeeRepo;
+        this.employeeMapper = employeeMapper;
+    }
 
     @Override
     public String addEmployee(EmployeeSaveDTO employeeSaveDTO) {
@@ -63,6 +69,34 @@ public class EmployeeServiceImpl implements IEmployeeService {
     public String updateEmployeeById(EmployeeSaveDTO employeeSaveDTO, long empId) {
         return null;
     }
+
+    @Override
+    public String updateImageUrl(ImageUploadDTO imageUploadDTO) {
+        log.info("Start Execute updateImageUrl: {}", imageUploadDTO.getImageUrl());
+        Employee employee = EntityUtils.getEntityDetails(imageUploadDTO.getEmployeeId(), employeeRepo, "Employee");
+        try {
+            employee.setImageUrl(imageUploadDTO.getImageUrl());
+            log.info("Set imageURL");
+            employeeRepo.save(employee);
+            return "Image upload ok";
+        } catch (Exception e) {
+            log.error("Error while uploading image: {}", e.getMessage());
+            throw new HandleException("Something went wrong during uploading image");
+        }
+    }
+
+    @Override
+    public ImageGetDTO getImage(long empId) {
+        Employee employee = EntityUtils.getEntityDetails(empId, employeeRepo, "Employee");
+        log.info("Employee Details: {}", employee.toString());
+        try {
+            return new ImageGetDTO(employee.getImageUrl());
+        } catch (Exception e) {
+            log.error("Error while get image: {}", e.getMessage());
+            throw new HandleException("Something went wrong during getting image");
+        }
+    }
+
 
     @Override
     public String deleteEmployee(long empId) {
