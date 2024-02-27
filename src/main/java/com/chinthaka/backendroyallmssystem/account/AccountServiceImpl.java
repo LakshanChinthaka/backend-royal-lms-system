@@ -4,7 +4,6 @@ import com.chinthaka.backendroyallmssystem.auth.AuthRequest;
 import com.chinthaka.backendroyallmssystem.employee.Employee;
 import com.chinthaka.backendroyallmssystem.employee.EmployeeMapper;
 import com.chinthaka.backendroyallmssystem.employee.EmployeeRepo;
-import com.chinthaka.backendroyallmssystem.employee.response.EmployeeResponseDTO;
 import com.chinthaka.backendroyallmssystem.excaption.AlreadyExistException;
 import com.chinthaka.backendroyallmssystem.excaption.HandleException;
 import com.chinthaka.backendroyallmssystem.excaption.NotFoundException;
@@ -35,6 +34,7 @@ import java.util.Optional;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class AccountServiceImpl implements IAccountService{
 
     private final AuthenticationManager authenticationManager;
@@ -44,28 +44,12 @@ public class AccountServiceImpl implements IAccountService{
     private final StudentRepo studentRepo;
     private final StudentMapper studentMapper;
     private final EmployeeRepo employeeRepo;
-    private final EmployeeMapper employeeMapper;
     private final UserRepo userRepository;
     private final PasswordEncoder passwordEncoder;
     private final StudentEnrollRepo enrollRepo;
     private final IStudentService studentService;
     private final StudentEnrollRepo studentEnrollRepo;
 
-    public AccountServiceImpl(AuthenticationManager authenticationManager, JwtUtil jwtUtil, CustomUserDetailsService customUserDetailsService, UserRepo userRepo, StudentRepo studentRepo, StudentMapper studentMapper, EmployeeRepo employeeRepo, EmployeeMapper employeeMapper, UserRepo userRepository, PasswordEncoder passwordEncoder, StudentEnrollRepo enrollRepo, IStudentService studentService, StudentEnrollRepo studentEnrollRepo) {
-        this.authenticationManager = authenticationManager;
-        this.jwtUtil = jwtUtil;
-        this.customUserDetailsService = customUserDetailsService;
-        this.userRepo = userRepo;
-        this.studentRepo = studentRepo;
-        this.studentMapper = studentMapper;
-        this.employeeRepo = employeeRepo;
-        this.employeeMapper = employeeMapper;
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.enrollRepo = enrollRepo;
-        this.studentService = studentService;
-        this.studentEnrollRepo = studentEnrollRepo;
-    }
 
     @Override
     public Object createAuthenticationToken(AuthRequest authenticationRequest) throws Exception {

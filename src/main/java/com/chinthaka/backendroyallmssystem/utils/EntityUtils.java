@@ -3,8 +3,11 @@ package com.chinthaka.backendroyallmssystem.utils;
 import com.chinthaka.backendroyallmssystem.course.Course;
 import com.chinthaka.backendroyallmssystem.excaption.HandleException;
 import com.chinthaka.backendroyallmssystem.excaption.NotFoundException;
+import io.micrometer.core.instrument.Counter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -12,7 +15,15 @@ import java.util.Objects;
 import java.util.function.Supplier;
 
 @Slf4j
+@Component
 public class EntityUtils {
+
+    private static Counter status404Counter;
+
+    @Autowired
+    public EntityUtils(Counter status404Counter) {
+        EntityUtils.status404Counter = status404Counter;
+    }
 
     // check is empty
     public static Object isEmpty(Object object) {
@@ -32,25 +43,20 @@ public class EntityUtils {
     //get entity details
     public static <T> T getEntityDetails(long id, JpaRepository<T, Long> repository, String entityName) {
         if (id <= 0){
+            status404Counter.increment();
             throw new NotFoundException("Id can not be null");
         }
         log.info("Start fetching {} entity details ", entityName);
-        Supplier<NotFoundException> exceptionSupplier =
-                () -> new NotFoundException(entityName + " Id - " + id + " not found");
-        return repository.findById(id).orElseThrow(exceptionSupplier);
+//        Supplier<NotFoundException> exceptionSupplier =
+//                () -> new NotFoundException(entityName + " Id - " + id + " not found");
+//        return repository.findById(id).orElseThrow(exceptionSupplier);
+        return repository.findById(id)
+                .orElseThrow(() -> {
+                    status404Counter.increment();
+                    return new NotFoundException(entityName + " Id - " + id + " not found");
+                });
     }
 
-
-//    //get entity by nic
-//    public static <T> T getEntityByNic(String nic, JpaRepository<T, Long> repository, String entityName) {
-//        if (nic.isBlank()){
-//            throw new NotFoundException(entityName+" Nic can not be null");
-//        }
-//        log.info("Start fetching {} entity details ", entityName);
-//        Supplier<NotFoundException> exceptionSupplier =
-//                () -> new NotFoundException(entityName +  " not found");
-//        return repository.findByNic(nic).orElseThrow(exceptionSupplier);
-//    }
 
 
     public static boolean isCourseExist(long courseId, JpaRepository<Course, Long> courseRepo) {

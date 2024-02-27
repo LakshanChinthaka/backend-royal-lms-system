@@ -19,6 +19,8 @@ import com.chinthaka.backendroyallmssystem.studentEnrollment.StudentEnrollMapper
 import com.chinthaka.backendroyallmssystem.studentEnrollment.StudentEnrollRepo;
 import com.chinthaka.backendroyallmssystem.studentEnrollment.response.StudentEnrollResponseDTO;
 import com.chinthaka.backendroyallmssystem.utils.EntityUtils;
+import io.micrometer.core.instrument.Counter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,35 +32,29 @@ import java.util.Objects;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class StudentServiceImpl implements IStudentService {
 
     private final StudentRepo studentRepo;
     private final StudentMapper studentMapper;
-    private final BatchRepo batchRepo;
-    private final CourseRepo courseRepo;
     private final StudentEnrollRepo studentEnrollRepo;
-    private final StudentEnrollMapper studentEnrollMapper;
     private final EmployeeRepo employeeRepo;
     private final UserRepo userRepo;
+    private final Counter status200Counter;
+    private final Counter status400Counter;
+    private final Counter status404Counter;
+    private final Counter status500Counter;
 
-    public StudentServiceImpl(StudentRepo studentRepo, StudentMapper studentMapper, BatchRepo batchRepo, CourseRepo courseRepo, StudentEnrollRepo studentEnrollRepo, StudentEnrollMapper studentEnrollMapper, EmployeeRepo employeeRepo, UserRepo userRepo) {
-        this.studentRepo = studentRepo;
-        this.studentMapper = studentMapper;
-        this.batchRepo = batchRepo;
-        this.courseRepo = courseRepo;
-        this.studentEnrollRepo = studentEnrollRepo;
-        this.studentEnrollMapper = studentEnrollMapper;
-        this.employeeRepo = employeeRepo;
-        this.userRepo = userRepo;
-    }
 
     @Override
     @Transactional
     public String addStudent(StudentDTO studentDTO) {
         if (null == studentDTO) {
+            status400Counter.increment();
             throw new NotFoundException("Student details not provided");
         }
         if (studentRepo.existsByNic(studentDTO.getNic())) {
+            status400Counter.increment();
             throw new AlreadyExistException("Student Already Exists");
         }
 
@@ -72,35 +68,14 @@ public class StudentServiceImpl implements IStudentService {
             student.setAddress(address);
 
             studentRepo.save(student);
+            status200Counter.increment();
             return "Registration successful";
         } catch (Exception e) {
             log.error("Error while student registration {} ", e.getMessage());
+            status500Counter.increment();
             throw new HandleException("Something went wrong during student registration");
         }
     }
-
-
-//    @Override
-//    public String uploadImage(String imageUrl, long studentId) {
-////        Student student = EntityUtils.getEntityDetails(studentId, studentRepo, "Student");
-//
-////        System.out.println(profileUrl);
-////        if (profileUrl == null) {
-////            throw new NotFoundException("Image not found in url");
-////        }
-//        try {
-//            studentRepo.uploadProfileUrl(imageUrl,studentId);
-//            String profileUrl = studentRepo.findProfileUrlById(studentId);
-//            if (profileUrl.isBlank()){
-//                return "No upload";
-//            }
-////            student.setImageUrl(imageUrl);
-////            studentRepo.save(student);
-//            return "Image upload success";
-//        } catch (Exception e) {
-//            throw new HandleException("Something went wrong during upload image");
-//        }
-//    }
 
     @Override
     public StudentResponseDTO studentFindById(long studentId) {
@@ -116,14 +91,16 @@ public class StudentServiceImpl implements IStudentService {
             final Student convertedStudent = studentMapper.studentSaveDTOtoEntity(studentDTO);
             convertedStudent.setId(studentId);
             studentRepo.save(convertedStudent);
+            status200Counter.increment();
             return "Student " + studentId + " Successfully updated";
         } catch (Exception e) {
+            status500Counter.increment();
             throw new HandleException("Something went wrong during upload student details");
         }
 
     }
 
-//    @Override
+    //    @Override
 //    @Transactional
 //    public String deleteStudent(long studentId) {
 //        Student student = EntityUtils.getEntityDetails(studentId, studentRepo, "Student");
@@ -139,27 +116,29 @@ public class StudentServiceImpl implements IStudentService {
 //            throw new HandleException("Something went wrong during deleting student details");
 //        }
 //    }
-@Override
-@Transactional
-public String deleteStudent(long studentId) {
-    // Retrieve the student entity
-    Student student = EntityUtils.getEntityDetails(studentId, studentRepo, "Student");
-    try {
-        // Check if there are associated StudentEnroll records
-        if (studentEnrollRepo.existsByStudent(student)) {
-            // Retrieve the enrollId of the first associated StudentEnroll record
-            long enrollId = studentEnrollRepo.findByStudent(student).getEnrollId();
-            // Delete the associated StudentEnroll record
-            studentEnrollRepo.deleteById(enrollId);
+    @Override
+    @Transactional
+    public String deleteStudent(long studentId) {
+        // Retrieve the student entity
+        Student student = EntityUtils.getEntityDetails(studentId, studentRepo, "Student");
+        try {
+            // Check if there are associated StudentEnroll records
+            if (studentEnrollRepo.existsByStudent(student)) {
+                // Retrieve the enrollId of the first associated StudentEnroll record
+                long enrollId = studentEnrollRepo.findByStudent(student).getEnrollId();
+                // Delete the associated StudentEnroll record
+                studentEnrollRepo.deleteById(enrollId);
+            }
+            // Delete the student entity
+            studentRepo.deleteById(studentId);
+            status200Counter.increment();
+            return "Student " + studentId + " Successfully Deleted";
+        } catch (Exception e) {
+            log.error("Error while updating student: {}", e.getMessage());
+            status500Counter.increment();
+            throw new HandleException("Something went wrong during deleting student details");
         }
-        // Delete the student entity
-        studentRepo.deleteById(studentId);
-        return "Student " + studentId + " Successfully Deleted";
-    } catch (Exception e) {
-        log.error("Error while updating student: {}", e.getMessage());
-        throw new HandleException("Something went wrong during deleting student details");
     }
-}
 
 
     @Override
@@ -194,25 +173,28 @@ public String deleteStudent(long studentId) {
                     );
                     studentResponseDTO.setEnroll(enrollDetails);
                 }
-
+                status200Counter.increment();
                 return studentResponseDTO;
             });
         } catch (Exception e) {
             log.error("Error while fetching student details: {}", e.getMessage());
+            status500Counter.increment();
             throw new HandleException("Error while fetching student details");
         }
     }
 
     @Override
     public StudentResponseDTO studentFindByNic(String nic) {
-        if (nic.isBlank()){
+        if (nic.isBlank()) {
+            status404Counter.increment();
             throw new NotFoundException("NIC number is missing");
         }
 
         Student student = studentRepo.findByNic(nic);
-        if (Objects.isNull(student)){
+        if (Objects.isNull(student)) {
+            status404Counter.increment();
             throw new NotFoundException("Student not found");
-        };
+        }
         return getStudentResponseDTO(student);
     }
 
@@ -232,55 +214,65 @@ public String deleteStudent(long studentId) {
         }
         StudentResponseDTO st = studentMapper.studentToStudentResponseDTO(student);
         st.setEnroll(enrollDetails);
+        status200Counter.increment();
         return st;
     }
 
     @Override
     public Object findByStudentAndEmpByNic(String nic, String role) {
-        if (!role.isEmpty()){
-            if (Objects.equals(role,"STUDENT")){
+        if (!role.isEmpty()) {
+            if (Objects.equals(role, "STUDENT")) {
                 Student student = studentRepo.findByNic(nic);
-                if (Objects.isNull(student)){
-                   throw new NotFoundException("Student not found");
+                if (Objects.isNull(student)) {
+                    status404Counter.increment();
+                    throw new NotFoundException("Student not found");
                 }
+                status200Counter.increment();
                 return student;
-            }else {
+            } else {
                 Employee emp = employeeRepo.findByNic(nic);
-                if (Objects.equals(emp,null)){
+                if (Objects.equals(emp, null)) {
+                    status404Counter.increment();
                     throw new NotFoundException("Employee not found");
                 }
+                status200Counter.increment();
                 return emp;
             }
         }
+        status500Counter.increment();
         throw new NotFoundException("First select student or employee");
     }
 
     @Override
     public Object findEmail(String nic) {
         Student student = studentRepo.findByNic(nic);
-        if (Objects.isNull(student)){
+        if (Objects.isNull(student)) {
+            status404Counter.increment();
             throw new NotFoundException("Student not found");
         }
         User user = userRepo.findByUserId(student.getId());
-        if (Objects.isNull(user)){
+        if (Objects.isNull(user)) {
+            status404Counter.increment();
             throw new NotFoundException("Student has no account found");
         }
+        status200Counter.increment();
         return user;
     }
 
     @Override
     public String uploadImage(StudentImageUploadDTO imageUploadDTO) {
         try {
-        studentRepo.uploadProfileUrl(imageUploadDTO.getImageUrl(),imageUploadDTO.getStudentId());
-        String profileUrl = studentRepo.findProfileUrlById(imageUploadDTO.getStudentId());
-        if (profileUrl.isBlank()){
-            return "No upload";
+            studentRepo.uploadProfileUrl(imageUploadDTO.getImageUrl(), imageUploadDTO.getStudentId());
+            String profileUrl = studentRepo.findProfileUrlById(imageUploadDTO.getStudentId());
+            if (profileUrl.isBlank()) {
+                status400Counter.increment();
+                return "No upload";
+            }
+            status200Counter.increment();
+            return "Image upload success";
+        } catch (Exception e) {
+            status500Counter.increment();
+            throw new HandleException("Something went wrong during upload image");
         }
-//            student.setImageUrl(imageUrl);
-//            studentRepo.save(student);
-        return "Image upload success";
-    } catch (Exception e) {
-        throw new HandleException("Something went wrong during upload image");
-    }
     }
 }

@@ -34,7 +34,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable()
                 .cors(Customizer.withDefaults())
                 .authorizeRequests()
-                .antMatchers("/authenticate","/api/v1/student/upload-image").permitAll()
+                .antMatchers("/authenticate", "/api/v1/student/upload-image","/manage/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
