@@ -20,6 +20,8 @@ import com.chinthaka.backendroyallmssystem.student.response.StudentResponseDTO;
 import com.chinthaka.backendroyallmssystem.studentEnrollment.StudentEnroll;
 import com.chinthaka.backendroyallmssystem.studentEnrollment.StudentEnrollRepo;
 import com.chinthaka.backendroyallmssystem.utils.EntityUtils;
+import io.micrometer.core.instrument.Counter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,6 +31,7 @@ import java.util.Objects;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class AssigmentServiceImpl implements IAssigmentService {
 
     private final AssigmentRepo assigmentRepo;
@@ -38,23 +41,20 @@ public class AssigmentServiceImpl implements IAssigmentService {
     private final StudentMapper studentMapper;
     private final AssignmentSubmitRepo submitRepo;
     private final StudentRepo studentRepo;
+    private final Counter status200Counter;
+    private final Counter status400Counter;
+    private final Counter status404Counter;
+    private final Counter status500Counter;
 
-    public AssigmentServiceImpl(AssigmentRepo assigmentRepo, BatchRepo batchRepo, StudentEnrollRepo enrollRepo, IStudentService studentService, StudentMapper studentMapper, AssignmentSubmitRepo submitRepo, StudentRepo studentRepo) {
-        this.assigmentRepo = assigmentRepo;
-        this.batchRepo = batchRepo;
-        this.enrollRepo = enrollRepo;
-        this.studentService = studentService;
-        this.studentMapper = studentMapper;
-        this.submitRepo = submitRepo;
-        this.studentRepo = studentRepo;
-    }
 
     @Override
     public String addAssigment(AssigmentAddDTO assigmentAddDTO) {
         if (Objects.isNull(assigmentAddDTO) || Objects.isNull(assigmentAddDTO.getAssiUrl())) {
+            status400Counter.increment();
             throw new NotFoundException("Details not provided");
         }
         if (assigmentRepo.existsByAssiCode(assigmentAddDTO.getAssiCode())) {
+            status400Counter.increment();
             throw new AlreadyExistException("Assigment Already exists");
         }
         try {
@@ -66,9 +66,11 @@ public class AssigmentServiceImpl implements IAssigmentService {
                     .deadLine(assigmentAddDTO.getDeadLine())
                     .build();
             assigmentRepo.save(assigment);
+            status200Counter.increment();
             return "Assigment adding success";
         } catch (Exception e) {
             log.error("Error while add assignment: {}", e.getMessage());
+            status500Counter.increment();
             throw new HandleException("Something went wrong while add Assigment ");
         }
     }
@@ -90,10 +92,12 @@ public class AssigmentServiceImpl implements IAssigmentService {
                 responseDTO.setBatchCode(batch.getCode());
                 responseDTO.setCourseName(batch.getCourse().getName());
 
+                status200Counter.increment();
                 return responseDTO;
             });
         } catch (Exception e) {
             log.error("Error while fetching assignment: {}", e.getMessage());
+            status500Counter.increment();
             throw new HandleException("Something went wrong during fetching assigment");
         }
     }
@@ -102,12 +106,15 @@ public class AssigmentServiceImpl implements IAssigmentService {
     public String deleteAssignment(long assId) {
         try {
             if (!assigmentRepo.existsById(assId)) {
+                status404Counter.increment();
                 throw new NotFoundException("Assigment not found");
             }
             assigmentRepo.deleteById(assId);
+            status200Counter.increment();
             return "Batch id " + assId + " deleted ";
         } catch (Exception e) {
             log.error("Error while delete assignment: {}", e.getMessage());
+            status500Counter.increment();
             throw new NotFoundException("Batch " + assId + " not found");
         }
     }
@@ -115,10 +122,12 @@ public class AssigmentServiceImpl implements IAssigmentService {
     @Override
     public Page<AssignmentResposeDTOforStudent> getAllAssigmentByStudent(Pageable pageable, long studentId) {
         if (studentId <= 0) {
+            status404Counter.increment();
             throw new NotFoundException("Student Id not found");
         }
         StudentResponseDTO studentResponseDTO = studentService.studentFindById(studentId);
         if (studentResponseDTO == null) {
+            status404Counter.increment();
             throw new NotFoundException("Student not found");
         }
         try {
@@ -128,7 +137,7 @@ public class AssigmentServiceImpl implements IAssigmentService {
                 return null;
             }
             Page<Assigment> assigment = assigmentRepo.findAllByBatchId(studentEnroll.getBatch().getBatchId(), pageable);
-            System.out.println(assigment.toString());
+
             return assigment.map(a -> {
                 AssignmentResposeDTOforStudent responseDTO = new AssignmentResposeDTOforStudent();
                 responseDTO.setAssiId(a.getAssiId());
@@ -140,10 +149,12 @@ public class AssigmentServiceImpl implements IAssigmentService {
 
                 String grade = submitRepo.findByCode(a.getAssiCode());
                 responseDTO.setGrade(grade);
+                status200Counter.increment();
                 return responseDTO;
             });
         } catch (Exception e) {
             log.error("Error while fetching assignment: {}", e.getMessage());
+            status500Counter.increment();
             throw new HandleException("Something went wrong during fetching assigment");
         }
     }
@@ -151,6 +162,7 @@ public class AssigmentServiceImpl implements IAssigmentService {
     @Override
     public String submitAssigment(SubmitRequestDTO submitRequestDTO) {
         if (Objects.isNull(submitRequestDTO)) {
+            status400Counter.increment();
             throw new NotFoundException("Assignment details not found");
         }
         String submitUrl = submitRequestDTO.getSubmitUrl();
@@ -158,6 +170,7 @@ public class AssigmentServiceImpl implements IAssigmentService {
         long studentId = submitRequestDTO.getStudentId();
 
         if (Objects.isNull(submitUrl)) {
+            status400Counter.increment();
             throw new NotFoundException("Assignment Url not found");
         }
 
@@ -167,6 +180,7 @@ public class AssigmentServiceImpl implements IAssigmentService {
                 AssigmentSubmit submit = submitRepo.findByAssiCodeAndStudentId(assiCode, studentId);
                 submit.setSubmitUrl(submitUrl);
                 submitRepo.save(submit);
+                status200Counter.increment();
                 return "Submit success";
 
             } else {
@@ -175,11 +189,14 @@ public class AssigmentServiceImpl implements IAssigmentService {
                 s.setSubmitUrl(submitRequestDTO.getSubmitUrl());
                 s.setBatchId(submitRequestDTO.getBatchId());
                 s.setStudentId(submitRequestDTO.getStudentId());
+                s.setGrade("Pending");
                 submitRepo.save(s);
+                status200Counter.increment();
                 return "Submit success";
             }
         } catch (Exception e) {
             log.error("Error while submit assignment: {}", e.getMessage());
+            status500Counter.increment();
             throw new HandleException("Something went wrong during submit assigment");
         }
 
@@ -197,6 +214,7 @@ public class AssigmentServiceImpl implements IAssigmentService {
                     EntityUtils.getEntityDetails(a.getStudentId(), studentRepo, "Student").getFirstName(),
                     a.getGrade()
             );
+            status200Counter.increment();
             return forAdmin;
         });
     }
@@ -208,9 +226,11 @@ public class AssigmentServiceImpl implements IAssigmentService {
         try {
             assigment.setGrade(submitGradeDTO.getGrade());
             String assiGrade = submitRepo.save(assigment).getGrade();
+            status200Counter.increment();
             return assiGrade;
         }catch (RuntimeException e){
             log.error("Error while submit grade: {}", e.getMessage());
+            status500Counter.increment();
             throw new HandleException("Something went wrong during submit grade");
         }
     }

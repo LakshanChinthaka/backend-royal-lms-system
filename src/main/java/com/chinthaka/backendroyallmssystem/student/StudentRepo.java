@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 
 @Repository
 public interface StudentRepo extends JpaRepository<Student,Long> {
@@ -22,4 +24,8 @@ public interface StudentRepo extends JpaRepository<Student,Long> {
     @Transactional
     @Query(value = "UPDATE Student s SET s.imageUrl = :imageUrl WHERE s.id = :studentId")
     void uploadProfileUrl(String imageUrl, long studentId);
+
+
+//    @Query("SELECT COUNT(s), s.createdDate FROM Student s WHERE  GROUP BY s.createdDate")
+//    List<Object[]> countStudentsByMonth(int month, int year);
 }

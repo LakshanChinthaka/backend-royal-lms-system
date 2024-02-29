@@ -239,7 +239,7 @@ public class StudentServiceImpl implements IStudentService {
                 return emp;
             }
         }
-        status500Counter.increment();
+        status400Counter.increment();
         throw new NotFoundException("First select student or employee");
     }
 

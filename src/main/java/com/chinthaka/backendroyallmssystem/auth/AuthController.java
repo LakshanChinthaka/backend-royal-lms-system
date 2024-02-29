@@ -2,6 +2,7 @@ package com.chinthaka.backendroyallmssystem.auth;
 
 import com.chinthaka.backendroyallmssystem.account.IAccountService;
 import com.chinthaka.backendroyallmssystem.utils.StandardResponse;
+import io.micrometer.core.instrument.Counter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -14,14 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Slf4j
+@RequiredArgsConstructor
 public class AuthController {
 
     private final IAccountService accountService;
-
-    public AuthController(IAccountService accountService) {
-        this.accountService = accountService;
-    }
-
 
     @PostMapping("/authenticate")
     public ResponseEntity<Object> createAuthenticationToken(@RequestBody AuthRequest authenticationRequest) throws Exception {

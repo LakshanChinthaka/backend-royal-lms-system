@@ -11,6 +11,7 @@ import com.chinthaka.backendroyallmssystem.student.StudentRepo;
 import com.chinthaka.backendroyallmssystem.studentEnrollment.request.StudentEnrollDTO;
 import com.chinthaka.backendroyallmssystem.studentEnrollment.response.EnrollPaginationDTO;
 import com.chinthaka.backendroyallmssystem.utils.EntityUtils;
+import io.micrometer.core.instrument.Counter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -19,19 +20,17 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class StudentEnrollServiceImpl implements IStudentEnrollService {
 
     private final StudentEnrollRepo studentEnrollRepo;
     private final BatchRepo batchRepo;
     private final StudentRepo studentRepo;
-    private final CourseRepo courseRepo;
+    private final Counter status200Counter;
+    private final Counter status400Counter;
+    private final Counter status404Counter;
+    private final Counter status500Counter;
 
-    public StudentEnrollServiceImpl(StudentEnrollRepo studentEnrollRepo, BatchRepo batchRepo, StudentRepo studentRepo, CourseRepo courseRepo) {
-        this.studentEnrollRepo = studentEnrollRepo;
-        this.batchRepo = batchRepo;
-        this.studentRepo = studentRepo;
-        this.courseRepo = courseRepo;
-    }
 
     @Override
     public String studentEnroll(StudentEnrollDTO studentEnrollDTO) {
@@ -40,9 +39,8 @@ public class StudentEnrollServiceImpl implements IStudentEnrollService {
                 studentEnrollDTO.getBatchId(), batchRepo, "Batch");
         Student student = EntityUtils.getEntityDetails(
                 studentEnrollDTO.getStudentId(), studentRepo, "Student");
-//        Course course = EntityUtils.getEntityDetails(
-//                studentEnrollDTO.getStudentId(), courseRepo, "Course");
         if (studentEnrollRepo.existsByStudent(student)) {
+            status400Counter.increment();
             throw new AlreadyExistException(
                     "Student id: " + studentEnrollDTO.getStudentId() +
                             " Already Enrolled");
@@ -55,9 +53,11 @@ public class StudentEnrollServiceImpl implements IStudentEnrollService {
                     batch.getCourse()
             );
             studentEnrollRepo.save(studentEnroll);
+            status200Counter.increment();
             return "Student id: " + studentEnrollDTO.getStudentId() + " Successfully Enrolled";
         } catch (Exception e) {
             log.error("Error while sStudent Enroll {}", e.getMessage());
+            status500Counter.increment();
             throw new HandleException("Something went wrong Student Enroll");
         }
     }
@@ -67,12 +67,14 @@ public class StudentEnrollServiceImpl implements IStudentEnrollService {
         log.info("Start Execute removing student id: {}", studentId);
         Student student = EntityUtils.getEntityDetails(studentId, studentRepo, "Student");
         if (!studentEnrollRepo.existsByStudent(student)) {
+            status404Counter.increment();
             throw new NotFoundException("Student id: " + studentId + "Not found");
         }
         try {
 
         } catch (Exception e) {
             log.error("Error while removing student from batch {}", e.getMessage());
+            status500Counter.increment();
             throw new HandleException("Something went wrong removing student from batch");
         }
         return null;
@@ -96,11 +98,13 @@ public class StudentEnrollServiceImpl implements IStudentEnrollService {
                         studentEnroll.getStudent().getGender(),
                         studentEnroll.getCreateBy()
                 );
+                status200Counter.increment();
                 return e;
             });
 
         } catch (Exception e) {
             log.error("Error while get pageable batch details: {}", e.getMessage());
+            status500Counter.increment();
             throw new HandleException("Something went wrong while get batch details");
         }
     }

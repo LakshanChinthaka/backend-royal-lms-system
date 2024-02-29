@@ -19,6 +19,7 @@ public class MetricsConfiguration {
                 .register(meterRegistry);
     }
 
+
     @Bean
     public Counter status200Counter(MeterRegistry meterRegistry) {
         return Counter.builder("http.status.200")

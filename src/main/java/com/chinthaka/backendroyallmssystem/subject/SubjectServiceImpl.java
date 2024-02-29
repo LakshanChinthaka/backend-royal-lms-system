@@ -7,6 +7,7 @@ import com.chinthaka.backendroyallmssystem.subject.request.SubjectDTO;
 import com.chinthaka.backendroyallmssystem.subjectAssign.SubjectAssignRepo;
 import com.chinthaka.backendroyallmssystem.subjectAssign.SubjectAssignToCourse;
 import com.chinthaka.backendroyallmssystem.utils.EntityUtils;
+import io.micrometer.core.instrument.Counter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -22,26 +23,27 @@ import java.util.Objects;
 @Service
 @Slf4j
 @Transactional
+@RequiredArgsConstructor
 public class SubjectServiceImpl implements ISubjectService {
 
     private final SubjectRepo subjectRepo;
     private final SubjectMapper subjectMapper;
     private final SubjectAssignRepo subjectAssignRepo;
+    private final Counter status200Counter;
+    private final Counter status400Counter;
+    private final Counter status500Counter;
 
-    public SubjectServiceImpl(SubjectRepo subjectRepo, SubjectMapper subjectMapper, SubjectAssignRepo subjectAssignRepo) {
-        this.subjectRepo = subjectRepo;
-        this.subjectMapper = subjectMapper;
-        this.subjectAssignRepo = subjectAssignRepo;
-    }
 
 
     @Override
     public String addSubject(SubjectDTO subjectDTO) {
         if (subjectDTO == null) {
+            status400Counter.increment();
             throw new NotFoundException("Subject details not provide");
         }
         final Subject s = subjectRepo.findBySubjectCode(subjectDTO.getSubjectCode());
         if (s != null) {
+            status400Counter.increment();
             throw new AlreadyExistException("Subject already Exist");
         }
         try {
@@ -51,8 +53,10 @@ public class SubjectServiceImpl implements ISubjectService {
                     subjectDTO.getName()
             );
             subjectRepo.save(subject);
+            status200Counter.increment();
             return "Subject save successful";
         } catch (Exception e) {
+            status500Counter.increment();
             throw new HandleException("Something went wrong during student registration");
         }
     }
@@ -61,6 +65,7 @@ public class SubjectServiceImpl implements ISubjectService {
     public SubjectDTO subjectGetById(long subjectId) {
         Subject subject = EntityUtils.getEntityDetails(subjectId, subjectRepo, "Subject");
         SubjectDTO subjectDTO = subjectMapper.subjectToSubjectDTO(subject);
+        status200Counter.increment();
         return subjectDTO;
     }
 
@@ -70,7 +75,6 @@ public class SubjectServiceImpl implements ISubjectService {
         log.info("Start delete subject method subject ID: {}", subjectId);
         Subject subject = EntityUtils.getEntityDetails(subjectId, subjectRepo, "Subject");
         try {
-
             List<Long> subjectIds = new ArrayList<>();
             List<SubjectAssignToCourse> list = subjectAssignRepo.findAllBySubjects(subject);
             for (SubjectAssignToCourse s : list) {
@@ -80,10 +84,12 @@ public class SubjectServiceImpl implements ISubjectService {
 
             subjectRepo.deleteById(subjectId);
 
+            status200Counter.increment();
             return "Delete Successfully";
 
         } catch (Exception e) {
             log.error("Error while deleting subject details: {}", e.getMessage());
+            status500Counter.increment();
             throw new HandleException("Something went to wrong while deleting subject");
         }
     }
@@ -95,8 +101,10 @@ public class SubjectServiceImpl implements ISubjectService {
         final Subject updatedSubject = subjectMapper.subjectSaveDTOtoSubject(subjectDTO);
         try {
             subjectRepo.save(updatedSubject);
+            status200Counter.increment();
             return "Subject id " + subjectId + " updated";
         } catch (Exception e) {
+            status500Counter.increment();
             throw new HandleException("Something went wrong during update student");
         }
 
@@ -116,10 +124,12 @@ public class SubjectServiceImpl implements ISubjectService {
                 sub.setCreatedDate(s.getCreatedDate());
                 sub.setModifiedBy(s.getModifiedBy());
                 sub.setModifiedData(s.getModifiedData());
+                status200Counter.increment();
                 return sub;
             });
         } catch (Exception e) {
             log.error("Error while fetching subject details {}", e.getMessage());
+            status500Counter.increment();
             throw new HandleException("Something went wrong while fetching subject details");
         }
     }

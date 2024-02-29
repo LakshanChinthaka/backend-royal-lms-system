@@ -2,7 +2,6 @@ package com.chinthaka.backendroyallmssystem.account;
 
 import com.chinthaka.backendroyallmssystem.auth.AuthRequest;
 import com.chinthaka.backendroyallmssystem.employee.Employee;
-import com.chinthaka.backendroyallmssystem.employee.EmployeeMapper;
 import com.chinthaka.backendroyallmssystem.employee.EmployeeRepo;
 import com.chinthaka.backendroyallmssystem.excaption.AlreadyExistException;
 import com.chinthaka.backendroyallmssystem.excaption.HandleException;
@@ -17,6 +16,7 @@ import com.chinthaka.backendroyallmssystem.studentEnrollment.StudentEnroll;
 import com.chinthaka.backendroyallmssystem.studentEnrollment.StudentEnrollRepo;
 import com.chinthaka.backendroyallmssystem.studentEnrollment.response.StudentEnrollResponseDTO;
 import com.chinthaka.backendroyallmssystem.utils.EntityUtils;
+import io.micrometer.core.instrument.Counter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -49,6 +49,9 @@ public class AccountServiceImpl implements IAccountService{
     private final StudentEnrollRepo enrollRepo;
     private final IStudentService studentService;
     private final StudentEnrollRepo studentEnrollRepo;
+    private final Counter status200Counter;
+    private final Counter status400Counter;
+    private final Counter status500Counter;
 
 
     @Override
@@ -60,12 +63,14 @@ public class AccountServiceImpl implements IAccountService{
                     new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword())
             );
         } catch (AuthenticationException e) {
+            status400Counter.increment();
             throw new Exception("Incorrect username or password", e);
         }
         final UserDetails userDetails = customUserDetailsService
                 .loadUserByUsername(authenticationRequest.getUsername());
         final String jwt = jwtUtil.generateToken(userDetails);
         JwtResponse jwtResponse = new JwtResponse(jwt);
+        status400Counter.increment();;
         return jwtResponse;
     }
 
@@ -75,12 +80,14 @@ public class AccountServiceImpl implements IAccountService{
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
+            status400Counter.increment();
             return Optional.empty();
         }
        try {
            final Optional<User> user = userRepo.findByUsername(authentication.getName());
            log.info("Logged in User details: {}",user.toString());
            if (user.isEmpty()) {
+               status400Counter.increment();
                return Optional.empty();
            }
 
@@ -94,6 +101,7 @@ public class AccountServiceImpl implements IAccountService{
                    StudentResponseDTO student = studentService.studentFindById(userId);
                    System.out.println(student.toString());
                    log.info("Logged in Student details: {}",student.toString());
+                   status200Counter.increment();
                    return student;
                }else {
                    return null;
@@ -103,6 +111,7 @@ public class AccountServiceImpl implements IAccountService{
                if (employeeRepo.existsByNic(userNic)){
                    Employee employee = employeeRepo.findByNic(userNic);
                   log.info("Logged in Employee details: {}",employee.toString());
+                   status200Counter.increment();
                    return employee;
                }else {
                    return null;
@@ -111,6 +120,7 @@ public class AccountServiceImpl implements IAccountService{
 
        }catch (Exception e){
            log.error("Error while get profile details: {}", e.getMessage());
+           status500Counter.increment();
            throw new HandleException("Some thing went wrong profile");
        }
     }
@@ -118,10 +128,12 @@ public class AccountServiceImpl implements IAccountService{
     @Override
     public String registerUser(AccountCreateRequest accountCreateRequest) {
         if (accountCreateRequest.getUserId() <= 0){
+            status400Counter.increment();
             throw new HandleException("User not selected");
         }
         if (accountCreateRequest.getUsername().isEmpty()
                 || accountCreateRequest.getPassword().isEmpty() || accountCreateRequest.getRole().isEmpty()){
+            status400Counter.increment();
             throw new HandleException("All the details required");
         }
         if (Objects.equals("ADMIN",accountCreateRequest.getRole())){
@@ -129,14 +141,17 @@ public class AccountServiceImpl implements IAccountService{
         }else {
             Student student = EntityUtils.getEntityDetails(accountCreateRequest.getUserId(),studentRepo,"Student");
             if (!enrollRepo.existsByStudent(student)){
+                status400Counter.increment();
                 throw new NotFoundException("The student must first enroll in the course");
             }
         }
 
         if (userRepository.existsByUsername(accountCreateRequest.getUsername())) {
+            status400Counter.increment();
             throw new AlreadyExistException("Username already taken!");
         }
         if (userRepository.existsByUserId(accountCreateRequest.getUserId())) {
+            status400Counter.increment();
             throw new AlreadyExistException("User have already an account!");
         }
 
@@ -149,6 +164,7 @@ public class AccountServiceImpl implements IAccountService{
         user.setUserNic(accountCreateRequest.getUserNic());
 
         userRepository.save(user);
+        status400Counter.increment();
         return "Account successfully created";
     }
 
@@ -170,6 +186,7 @@ public class AccountServiceImpl implements IAccountService{
         }
         StudentResponseDTO st = studentMapper.studentToStudentResponseDTO(student);
         st.setEnroll(enrollDetails);
+        status400Counter.increment();
         return st;
     }
 }

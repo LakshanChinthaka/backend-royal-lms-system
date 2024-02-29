@@ -11,6 +11,8 @@ import com.chinthaka.backendroyallmssystem.school.School;
 import com.chinthaka.backendroyallmssystem.school.SchoolRepo;
 import com.chinthaka.backendroyallmssystem.studentEnrollment.StudentEnrollRepo;
 import com.chinthaka.backendroyallmssystem.utils.EntityUtils;
+import io.micrometer.core.instrument.Counter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,19 +22,17 @@ import java.util.Objects;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class BatchServiceImpl implements IBatchService {
 
     private final BatchRepo batchRepo;
     private final CourseRepo courseRepo;
     private final SchoolRepo schoolRepo;
     private final StudentEnrollRepo enrollRepo;
-
-    public BatchServiceImpl(BatchRepo batchRepo, CourseRepo courseRepo, SchoolRepo schoolRepo, StudentEnrollRepo enrollRepo) {
-        this.batchRepo = batchRepo;
-        this.courseRepo = courseRepo;
-        this.schoolRepo = schoolRepo;
-        this.enrollRepo = enrollRepo;
-    }
+    private final Counter status200Counter;
+    private final Counter status500Counter;
+    private final Counter status400Counter;
+    private final Counter status404Counter;
 
     @Override
     public BatchResponseDTO getById(long batchId) {
@@ -64,6 +64,7 @@ public class BatchServiceImpl implements IBatchService {
             );
         }catch (Exception e){
             log.error("Error while fetching data: {}",e.getMessage());
+            status500Counter.increment();
             throw new HandleException("Something went wrong fetching batch data");
         }
     }
@@ -72,18 +73,22 @@ public class BatchServiceImpl implements IBatchService {
     public String deleteBatch(long batchId) {
         if (batchRepo.existsById(batchId)) {
             batchRepo.deleteById(batchId);
+            status200Counter.increment();
             return "Batch id " + batchId + " deleted ";
         }
+        status500Counter.increment();
         throw new NotFoundException("Batch " + batchId + " not found");
     }
 
     @Override
     public String addBatch(BatchDTO batchDTO) {
         if (batchDTO == null) {
+            status400Counter.increment();
             throw new NotFoundException("Batch details not provide");
         }
         final Batch b = batchRepo.findByCode(batchDTO.getCode());
         if (b != null) {
+            status404Counter.increment();
             throw new AlreadyExistException("Batch already Exist");
         }
         Course course = EntityUtils.getEntityDetails(batchDTO.getCourseId(), courseRepo, "Course");
@@ -96,8 +101,10 @@ public class BatchServiceImpl implements IBatchService {
                     school
             );
             batchRepo.save(batch);
+            status200Counter.increment();
             return "Batch save successful";
         } catch (Exception e) {
+            status500Counter.increment();
             throw new HandleException("Something went wrong during create new Batch ");
         }
     }
@@ -108,9 +115,11 @@ public class BatchServiceImpl implements IBatchService {
         final Course course = EntityUtils.getEntityDetails(courseId, courseRepo,"Course");
         try {
             Page<Batch> batchPage = batchRepo.findAllByCourse(pageable,course);
+            status200Counter.increment();
             return getBatchResponseDTOS(batchPage);
         }catch (Exception e){
             log.error("Error while get pageable batch details: {}", e.getMessage());
+            status500Counter.increment();
             throw new HandleException("Something went wrong while get batch details");
         }
 
@@ -121,9 +130,11 @@ public class BatchServiceImpl implements IBatchService {
         log.info("Start execute getAllBatch method {}",pageable);
         try {
             Page<Batch> batchPage = batchRepo.findAll(pageable);
+            status200Counter.increment();
             return getBatchResponseDTOS(batchPage);
         }catch (Exception e){
             log.error("Error while get pageable batch details: {}", e.getMessage());
+            status500Counter.increment();
             throw new HandleException("Something went wrong while get batch details");
         }
     }
@@ -143,6 +154,7 @@ public class BatchServiceImpl implements IBatchService {
             
             log.info("Batch id: {} has students: {}", batch.getBatchId(), studentCount);
             BatchResponseDTO bt = getBatchResponseDTO(batch, studentCount);
+            status200Counter.increment();
             return bt;
 
         });

@@ -13,6 +13,8 @@ import com.chinthaka.backendroyallmssystem.subjectAssign.SubjectAssignRepo;
 import com.chinthaka.backendroyallmssystem.subjectAssign.SubjectAssignToCourse;
 import com.chinthaka.backendroyallmssystem.subjectAssign.response.SubjectAssignResponseDTO;
 import com.chinthaka.backendroyallmssystem.utils.EntityUtils;
+import io.micrometer.core.instrument.Counter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -25,28 +27,28 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class CourserServiceImpl implements ICourseService {
 
     private final CourseRepo courseRepo;
     private final CourseMapper courseMapper;
     private final SchoolRepo schoolRepo;
     private final SubjectAssignRepo subjectAssignRepo;
+    private final Counter status200Counter;
+    private final Counter status400Counter;;
+    private final Counter status500Counter;
 
-    @Autowired
-    public CourserServiceImpl(CourseRepo courseRepo, CourseMapper courseMapper, SchoolRepo schoolRepo, SubjectAssignRepo subjectAssignRepo) {
-        this.courseRepo = courseRepo;
-        this.courseMapper = courseMapper;
-        this.schoolRepo = schoolRepo;
-        this.subjectAssignRepo = subjectAssignRepo;
-    }
+
 
     @Override
     public String createCourse(CourseDTO courseDTO) {
         log.info("Create new course:{}", courseDTO);
         if (courseDTO == null) {
+            status400Counter.increment();;
             throw new AlreadyExistException("Course details not provide");
         }
         if (courseRepo.existsByCode(courseDTO.getCode())) {
+            status400Counter.increment();;
             throw new AlreadyExistException("Course code: " + courseDTO.getCode() + " Already exist");
         }
         try {
@@ -54,9 +56,11 @@ public class CourserServiceImpl implements ICourseService {
             School school = EntityUtils.getEntityDetails(courseDTO.getSchoolId(), schoolRepo, "School");
             course.setSchool(school);
             courseRepo.save(course);
+            status200Counter.increment();;
             return "Course successfully created";
         } catch (Exception e) {
             log.error("Error while creating new course: {}", e.getMessage());
+            status500Counter.increment();;
             throw new HandleException("Something went wrong during creating course");
         }
     }
@@ -89,9 +93,11 @@ public class CourserServiceImpl implements ICourseService {
             }
             log.info("Success mapping subject to course");
             courseResponseDTO.setSubjectlist(subList);
+            status200Counter.increment();;
             return courseResponseDTO;
         } catch (Exception e) {
             log.error("Error fetching course details : {} ", e.getMessage());
+            status500Counter.increment();;
             throw new HandleException("Something went wrong during fetching course details");
         }
     }
@@ -101,6 +107,7 @@ public class CourserServiceImpl implements ICourseService {
     public String uploadCourse(CourseEditDTO courseEditDTO, long courseId) {
         log.info("Update course id:{} details", courseId);
         if (courseEditDTO == null) {
+            status400Counter.increment();;
             throw new NotFoundException("Course details not provide");
         }
         final Course course = EntityUtils.getEntityDetails(courseId, courseRepo, "Course");
@@ -119,9 +126,11 @@ public class CourserServiceImpl implements ICourseService {
             course.setSchool(school);
 
             courseRepo.save(course);
+            status200Counter.increment();;
             return "Course " + courseId + " Successfully updated";
         } catch (Exception e) {
             log.error("Error while updating course Details : {}", e.getMessage());
+            status500Counter.increment();;
             throw new HandleException("Something went wrong during upload Course details");
         }
 
@@ -132,8 +141,10 @@ public class CourserServiceImpl implements ICourseService {
         final Course course = EntityUtils.getEntityDetails(courseId, courseRepo, "Course");
         try {
             courseRepo.deleteById(course.getCourseId());
+            status200Counter.increment();;
             return "Course " + courseId + " Successfully Deleted";
         } catch (Exception e) {
+            status500Counter.increment();;
             throw new HandleException("Something went wrong during deleting course details");
         }
     }
@@ -163,9 +174,11 @@ public class CourserServiceImpl implements ICourseService {
                                 s.getSubjects().getName()))
                         .collect(Collectors.toList());
                 courseResponseDTO.setSubjectlist(subList);
+                status200Counter.increment();;
                 return courseResponseDTO;
             });
         } catch (Exception e) {
+            status500Counter.increment();;
             throw new HandleException("Something went wrong during fetching course details");
         }
 
@@ -186,6 +199,7 @@ public class CourserServiceImpl implements ICourseService {
 
             courseResponseForDrops.add(courseResponseForDrop);
         }
+        status200Counter.increment();;
         return courseResponseForDrops;
     }
 }
