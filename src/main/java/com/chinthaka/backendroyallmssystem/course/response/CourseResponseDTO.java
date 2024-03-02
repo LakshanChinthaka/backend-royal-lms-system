@@ -30,6 +30,7 @@ public class CourseResponseDTO {
     private String duration;
     private Medium medium;
     private String schoolName;
+    private String imageUrl;
     private String schoolCode;
     private String createBy;
     private LocalDateTime createdDate;

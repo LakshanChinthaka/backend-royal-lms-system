@@ -9,7 +9,7 @@ public interface IStudentEnrollService {
 
     String studentEnroll(StudentEnrollDTO studentEnrollDTO);
 
-    String removeStudent(long studentId);
+    String removeStudent(long enrollId);
 
 
     Page<EnrollPaginationDTO> getAllStudentByBatch(long batchId,Pageable pageable);

@@ -28,4 +28,8 @@ public class Subject extends Auditor {
     @Column(name = "name", nullable = false)
     private String name;
 
+    public Subject(String subjectCode, String name) {
+        this.subjectCode = subjectCode;
+        this.name = name;
+    }
 }

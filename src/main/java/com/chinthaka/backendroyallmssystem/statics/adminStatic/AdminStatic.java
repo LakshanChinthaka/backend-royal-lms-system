@@ -18,7 +18,6 @@ public class AdminStatic {
     private final IAdminStatic adminStaticService;
 
     @GetMapping(value = "/static")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<StandardResponse> getAllStatics(){
         AdminStaticResponseDTO response = adminStaticService.getAllStatics();
         return new ResponseEntity<>(

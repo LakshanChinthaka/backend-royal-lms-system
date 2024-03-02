@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -116,29 +117,62 @@ public class StudentServiceImpl implements IStudentService {
 //            throw new HandleException("Something went wrong during deleting student details");
 //        }
 //    }
+//    @Override
+//    @Transactional
+//    public String deleteStudent(long studentId) {
+//        Student student = EntityUtils.getEntityDetails(studentId, studentRepo, "Student");
+//        try {
+//            if (studentEnrollRepo.existsByStudent(student)) {
+////                long enrollId = studentEnrollRepo.findByStudent(student).getEnrollId();
+////                log.info("*Enroll id: {}", enrollId);
+////                studentEnrollRepo.deleteById(enrollId);
+////
+////                if (studentEnrollRepo.existsById(enrollId)){
+////                   log.info("Enroll Yes: {}",true);
+////                }else {
+////                    log.info("Enroll No: {}",false);
+////                }
+//
+//            }
+//            log.info("Student id: {}", studentId);
+//            studentRepo.deleteById(studentId);
+//            status200Counter.increment();
+//
+//            return "Student " + studentId + " Successfully Deleted";
+//        } catch (Exception e) {
+//            log.error("Error while updating student: {}", e.getMessage());
+//            status500Counter.increment();
+//            throw new HandleException("Something went wrong during deleting student details");
+//        }
+//    }
+
+
     @Override
     @Transactional
     public String deleteStudent(long studentId) {
         // Retrieve the student entity
-        Student student = EntityUtils.getEntityDetails(studentId, studentRepo, "Student");
+        Student student = studentRepo.findById(studentId)
+                .orElseThrow(() -> new NotFoundException("Student not found with ID: " + studentId));
+
         try {
             // Check if there are associated StudentEnroll records
-            if (studentEnrollRepo.existsByStudent(student)) {
-                // Retrieve the enrollId of the first associated StudentEnroll record
-                long enrollId = studentEnrollRepo.findByStudent(student).getEnrollId();
-                // Delete the associated StudentEnroll record
-                studentEnrollRepo.deleteById(enrollId);
+            List<StudentEnroll> studentEnrollList = student.getEnrollments();
+            log.info("*Enroll id: {}", studentEnrollList.toArray());
+            if (!studentEnrollList.isEmpty()) {
+                // Delete associated StudentEnroll records
+                studentEnrollRepo.deleteAll(studentEnrollList);
             }
             // Delete the student entity
-            studentRepo.deleteById(studentId);
+            studentRepo.delete(student);
             status200Counter.increment();
             return "Student " + studentId + " Successfully Deleted";
         } catch (Exception e) {
-            log.error("Error while updating student: {}", e.getMessage());
+            log.error("Error while deleting student: {}", e.getMessage());
             status500Counter.increment();
             throw new HandleException("Something went wrong during deleting student details");
         }
     }
+
 
 
     @Override

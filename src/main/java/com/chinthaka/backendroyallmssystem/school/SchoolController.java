@@ -23,6 +23,7 @@ public class SchoolController {
     private final ISchoolService schoolService;
     public final Counter apiRequestCounter;
 
+
     public SchoolController(ISchoolService schoolService, Counter apiRequestCounter) {
         this.schoolService = schoolService;
         this.apiRequestCounter = apiRequestCounter;

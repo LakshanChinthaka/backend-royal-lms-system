@@ -32,7 +32,7 @@ public class Course extends Auditor {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "description")
+    @Column(name = "description",length = 5000)
     private String description;
 
     @Column(name = "total_credit")
@@ -54,6 +54,9 @@ public class Course extends Auditor {
 
     @Column(name = "duration")
     private String duration;
+
+    @Column(name = "image_url")
+    private String imageUrl;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "medium")

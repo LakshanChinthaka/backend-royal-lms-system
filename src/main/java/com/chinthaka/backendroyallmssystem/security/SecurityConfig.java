@@ -34,7 +34,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable()
                 .cors(Customizer.withDefaults())
                 .authorizeRequests()
-                .antMatchers("/authenticate", "/api/v1/student/upload-image","/manage/**").permitAll()
+                .antMatchers("/authenticate",
+                        "/api/v1/student/upload-image",
+                        "/manage/**",
+                        "/api/v1/admin/static",
+                        "/api/v1/course/find-all",
+                        "/api/v1/enum/**",
+                        "/api/v1/course/find/**",
+                        "/api/v1/assign/find").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);

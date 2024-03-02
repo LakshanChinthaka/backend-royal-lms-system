@@ -6,6 +6,7 @@ import com.chinthaka.backendroyallmssystem.student.request.StudentDTO;
 import com.chinthaka.backendroyallmssystem.student.request.StudentImageUploadDTO;
 import com.chinthaka.backendroyallmssystem.student.response.StudentResponseDTO;
 import com.chinthaka.backendroyallmssystem.utils.StandardResponse;
+import io.micrometer.core.instrument.Counter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,14 +25,17 @@ public class StudentController {
 
 
     private final IStudentService studentService;
+    public final Counter apiRequestCounter;
 
-    public StudentController(IStudentService studentService) {
+    public StudentController(IStudentService studentService, Counter apiRequestCounter) {
         this.studentService = studentService;
+        this.apiRequestCounter = apiRequestCounter;
     }
 
     @PostMapping("/add")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<StandardResponse> addStudent(@RequestBody StudentDTO studentDTO){
+        apiRequestCounter.increment();
         log.info("Start to execute addStudent : {} ", studentDTO);
             final String response = studentService.addStudent(studentDTO);
             return new ResponseEntity<>(
@@ -43,6 +47,7 @@ public class StudentController {
 //    @PreAuthorize("hasRole('ROLE_STUDENT')")
     public ResponseEntity<StandardResponse> uploadImage(
             @RequestBody StudentImageUploadDTO imageUploadDTO){
+        apiRequestCounter.increment();
        log.info("Student profile upload: {}", imageUploadDTO.toString());
         final String response = studentService.uploadImage(imageUploadDTO);
         return new ResponseEntity<>(
@@ -52,6 +57,7 @@ public class StudentController {
     @GetMapping(value = "/find-by-id",params = {"id"})
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<StandardResponse> studentFindById(@RequestParam("id") long studentId){
+        apiRequestCounter.increment();
         StudentResponseDTO response = studentService.studentFindById(studentId);
         return new ResponseEntity<>(
                 new StandardResponse(200,"Success",response), HttpStatus.OK);
@@ -69,6 +75,8 @@ public class StudentController {
     @DeleteMapping(value = "/delete-by-id",params = {"id"})
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<StandardResponse> deleteStudent(@RequestParam("id") long studentId){
+        apiRequestCounter.increment();
+        log.info("DELETE request received on /api/v1/student/find/{}", studentId);
         final String response = studentService.deleteStudent(studentId);
         return new ResponseEntity<>(
                 new StandardResponse(200,"Success",response), HttpStatus.OK);
@@ -78,6 +86,7 @@ public class StudentController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<StandardResponse> getAllSubject(
             @PageableDefault(sort = "id",direction = Sort.Direction.DESC) Pageable pageable){
+        apiRequestCounter.increment();
         log.info("GET request received on /api/v1/student/find/pagination");
         Page<StudentResponseDTO> response = studentService.getAllSubject(pageable);
         return new ResponseEntity<>(
@@ -88,6 +97,7 @@ public class StudentController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<StandardResponse> findByStudentAndEmpByNic(@RequestParam("nic") String nic,
                                                              @RequestParam("role")String role){
+        apiRequestCounter.increment();
         log.info("GET request received on /api/v1/student/find-by-nic");
         Object response = studentService.findByStudentAndEmpByNic(nic,role);
             return new ResponseEntity<>(
@@ -97,6 +107,7 @@ public class StudentController {
     @GetMapping(value = "/find-by-email",params = {"nic"})
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<StandardResponse> findEmail(@RequestParam("nic")String nic){
+        apiRequestCounter.increment();
         log.info("GET request received on /api/v1/student/find-by-email");
         Object response = studentService.findEmail(nic);
         return new ResponseEntity<>(

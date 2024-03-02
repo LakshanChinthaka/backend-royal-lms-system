@@ -24,7 +24,7 @@ import java.util.List;
 public class EnumController {
 
     @GetMapping("/category")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+//    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<StandardResponse> getCourseCategory() {
         List<Category> response = Arrays.asList(Category.values());
         return new ResponseEntity<>(
@@ -32,7 +32,7 @@ public class EnumController {
     }
 
     @GetMapping("/type")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+//    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<StandardResponse> getCourseTypes() {
         List<Type> response = Arrays.asList(Type.values());
         return new ResponseEntity<>(
@@ -40,7 +40,7 @@ public class EnumController {
     }
 
     @GetMapping("/medium")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+//    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<StandardResponse> getCourseMedium() {
         List<Medium> response = Arrays.asList(Medium.values());
         return new ResponseEntity<>(

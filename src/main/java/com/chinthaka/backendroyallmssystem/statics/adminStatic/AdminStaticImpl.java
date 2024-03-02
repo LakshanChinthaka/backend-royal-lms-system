@@ -103,14 +103,14 @@ public class AdminStaticImpl implements IAdminStatic{
 
         //Total Count
         long studentCount = studentRepo.count();
-        long employeeCount = employeeRepo.count();
+        long submitAssigment = submitRepo.count();
         long courseCount = courseRepo.count();
         long subjectCount = subjectRepo.count();
         long schoolCount = schoolRepo.count();
         long assignmentCount = assigmentRepo.count();
         AdminStaticResponseDTO ad = new AdminStaticResponseDTO(
                 studentCount,
-                employeeCount,
+                submitAssigment,
                 subjectCount,
                 schoolCount,
                 courseCount,

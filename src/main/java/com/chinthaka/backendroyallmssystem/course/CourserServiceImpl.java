@@ -41,7 +41,7 @@ public class CourserServiceImpl implements ICourseService {
 
 
     @Override
-    public String createCourse(CourseDTO courseDTO) {
+    public String createCourse(CourseDTO courseDTO, String imageUrl) {
         log.info("Create new course:{}", courseDTO);
         if (courseDTO == null) {
             status400Counter.increment();;
@@ -55,6 +55,7 @@ public class CourserServiceImpl implements ICourseService {
             Course course = courseMapper.courseSaveDTOtoCourse(courseDTO);
             School school = EntityUtils.getEntityDetails(courseDTO.getSchoolId(), schoolRepo, "School");
             course.setSchool(school);
+            course.setImageUrl(imageUrl);
             courseRepo.save(course);
             status200Counter.increment();;
             return "Course successfully created";
@@ -164,6 +165,7 @@ public class CourserServiceImpl implements ICourseService {
                 courseResponseDTO.setCreatedDate(course.getCreatedDate());
                 courseResponseDTO.setModifiedBy(course.getModifiedBy());
                 courseResponseDTO.setModifiedData(course.getModifiedData());
+                courseResponseDTO.setImageUrl(course.getImageUrl());
                 // Fetch subject assignments and map to response DTO
                 List<SubjectAssignToCourse> subjectList = subjectAssignRepo.findAllByCourse(course);
                 List<SubjectAssignResponseDTO> subList = subjectList.stream()

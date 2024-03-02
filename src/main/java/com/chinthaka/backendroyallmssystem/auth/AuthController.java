@@ -19,9 +19,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final IAccountService accountService;
+    private final Counter apiRequestCounter;
 
     @PostMapping("/authenticate")
     public ResponseEntity<Object> createAuthenticationToken(@RequestBody AuthRequest authenticationRequest) throws Exception {
+        apiRequestCounter.increment();
         log.info("Execute Authentication Controller: password:{}, username: {} ",
                 authenticationRequest.getUsername(),authenticationRequest.getUsername());
         Object response = accountService.createAuthenticationToken(authenticationRequest);
@@ -31,6 +33,7 @@ public class AuthController {
     @GetMapping("/profile")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_STUDENT')")
     public ResponseEntity<?> getCurrentUserDetails() {
+        apiRequestCounter.increment();
         log.info("GET request received on /profile");
         Object response = accountService.getCurrentUserDetails();
         log.info("Profile details before return: {}",response.toString());

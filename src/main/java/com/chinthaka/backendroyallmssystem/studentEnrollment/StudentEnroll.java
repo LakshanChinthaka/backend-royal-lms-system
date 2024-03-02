@@ -26,13 +26,10 @@ public class StudentEnroll extends Auditor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long enrollId;
 
-//    @OneToOne(cascade = CascadeType.ALL)
-//    @JoinColumn(name = "student_id",nullable = false)
-//    private Student student;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "student_id", nullable = false)
     private Student student;
+
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)

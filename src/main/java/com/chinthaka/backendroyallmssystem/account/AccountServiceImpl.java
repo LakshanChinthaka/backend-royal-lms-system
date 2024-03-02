@@ -1,5 +1,6 @@
 package com.chinthaka.backendroyallmssystem.account;
 
+import com.chinthaka.backendroyallmssystem.MailSender.MailServiceImpl;
 import com.chinthaka.backendroyallmssystem.auth.AuthRequest;
 import com.chinthaka.backendroyallmssystem.employee.Employee;
 import com.chinthaka.backendroyallmssystem.employee.EmployeeRepo;
@@ -52,6 +53,7 @@ public class AccountServiceImpl implements IAccountService{
     private final Counter status200Counter;
     private final Counter status400Counter;
     private final Counter status500Counter;
+    private final MailServiceImpl mailService;
 
 
     @Override
@@ -165,6 +167,7 @@ public class AccountServiceImpl implements IAccountService{
 
         userRepository.save(user);
         status400Counter.increment();
+//        mailService.mailSend()
         return "Account successfully created";
     }
 

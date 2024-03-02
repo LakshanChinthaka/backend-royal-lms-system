@@ -3,6 +3,7 @@ package com.chinthaka.backendroyallmssystem.subject;
 import com.chinthaka.backendroyallmssystem.excaption.AlreadyExistException;
 import com.chinthaka.backendroyallmssystem.excaption.HandleException;
 import com.chinthaka.backendroyallmssystem.excaption.NotFoundException;
+import com.chinthaka.backendroyallmssystem.subject.request.SubjectAddDTO;
 import com.chinthaka.backendroyallmssystem.subject.request.SubjectDTO;
 import com.chinthaka.backendroyallmssystem.subjectAssign.SubjectAssignRepo;
 import com.chinthaka.backendroyallmssystem.subjectAssign.SubjectAssignToCourse;
@@ -36,21 +37,20 @@ public class SubjectServiceImpl implements ISubjectService {
 
 
     @Override
-    public String addSubject(SubjectDTO subjectDTO) {
-        if (subjectDTO == null) {
+    public String addSubject(SubjectAddDTO subjectAddDTO) {
+        if (subjectAddDTO == null) {
             status400Counter.increment();
             throw new NotFoundException("Subject details not provide");
         }
-        final Subject s = subjectRepo.findBySubjectCode(subjectDTO.getSubjectCode());
+        final Subject s = subjectRepo.findBySubjectCode(subjectAddDTO.getSubjectCode());
         if (s != null) {
             status400Counter.increment();
             throw new AlreadyExistException("Subject already Exist");
         }
         try {
             Subject subject = new Subject(
-                    subjectDTO.getSubjectId(),
-                    subjectDTO.getSubjectCode(),
-                    subjectDTO.getName()
+                    subjectAddDTO.getSubjectCode(),
+                    subjectAddDTO.getName()
             );
             subjectRepo.save(subject);
             status200Counter.increment();

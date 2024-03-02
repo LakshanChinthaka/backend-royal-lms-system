@@ -25,5 +25,6 @@ public class CourseDTO {
     private String duration;
     private Medium medium;
     private int schoolId;
+//    private String imageUrl;
 
 }

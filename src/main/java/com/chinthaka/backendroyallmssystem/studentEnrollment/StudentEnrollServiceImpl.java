@@ -63,15 +63,14 @@ public class StudentEnrollServiceImpl implements IStudentEnrollService {
     }
 
     @Override
-    public String removeStudent(long studentId) {
-        log.info("Start Execute removing student id: {}", studentId);
-        Student student = EntityUtils.getEntityDetails(studentId, studentRepo, "Student");
-        if (!studentEnrollRepo.existsByStudent(student)) {
+    public String removeStudent(long enrollId) {
+        log.info("Start Execute removing student id: {}", enrollId);
+        if (!studentEnrollRepo.existsById(enrollId)) {
             status404Counter.increment();
-            throw new NotFoundException("Student id: " + studentId + "Not found");
+            throw new NotFoundException("Record id: " + enrollId + "Not found");
         }
         try {
-
+            studentEnrollRepo.deleteById(enrollId);
         } catch (Exception e) {
             log.error("Error while removing student from batch {}", e.getMessage());
             status500Counter.increment();

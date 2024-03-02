@@ -1,13 +1,14 @@
 package com.chinthaka.backendroyallmssystem.subject;
 
 
+import com.chinthaka.backendroyallmssystem.subject.request.SubjectAddDTO;
 import com.chinthaka.backendroyallmssystem.subject.request.SubjectDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface ISubjectService {
 
-    String addSubject(SubjectDTO subjectDTO);
+    String addSubject(SubjectAddDTO subjectAddDTO);
 
     SubjectDTO subjectGetById(long subjectId);
 

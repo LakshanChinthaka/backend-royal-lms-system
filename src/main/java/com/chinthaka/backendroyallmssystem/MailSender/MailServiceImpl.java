@@ -51,9 +51,6 @@ public class MailServiceImpl implements IMailService{
             mailSender.send(message);
             log.info("Mail send success");
 
-//            String truncatedMessage = mailSenderDTO.getMessageBody()
-//                    .substring(0, Math.min(mailSenderDTO.getMessageBody().length(), 2000));
-
             Mail mail = new Mail.MailBuilder()
                     .sendFrom(mailSenderDTO.getSendFrom())
                     .sendTo(mailSenderDTO.getSendTo())
