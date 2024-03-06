@@ -5,7 +5,7 @@
 This project is a comprehensive web application built using Spring Boot, React, and various technologies to provide a robust platform for managing student data, assignments, and educational resources. Here's a brief overview of the key features:
 
 ## Features Used Technology
-1. ##Authentication and Security: Utilizes Spring Boot JWT for secure role-based authentication (Role - Student and Admin).
+1. ## Authentication and Security: Utilizes Spring Boot JWT for secure role-based authentication (Role - Student and Admin).
 2. **File and Image Storage: Firebase integration for storing assignment files and profile pictures.
 3. **Scalable Deployment: Backend deployed on AWS EC2, with the database on AWS RDS, ensuring scalability and reliability.
 4. **Entity Management: CRUD operations for entities like Student, Course, Batch, etc.
