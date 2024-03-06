@@ -29,8 +29,8 @@ This project is a comprehensive web application built using Spring Boot, React, 
 ###  Admin Dashboard
 ![image](https://github.com/LakshanChinthaka/backend-royal-lms-system/assets/115285758/a6ff2a6c-0de4-4ea9-8db3-5d2b49f08e8f)
 
-### Backend Folder Structure
-![image](https://github.com/LakshanChinthaka/backend-royal-lms-system/assets/115285758/4db33c05-adac-45e0-966d-be891f96b645)
+### Student Registration
+![image](https://github.com/LakshanChinthaka/backend-royal-lms-system/assets/115285758/61321109-c842-4c46-a8d2-fac01f1bd775)
 
 ### Pagination
 ![image](https://github.com/LakshanChinthaka/backend-royal-lms-system/assets/115285758/3ced5327-19fc-4cdb-aac1-7fc8db1488bf)
@@ -43,8 +43,4 @@ This project is a comprehensive web application built using Spring Boot, React, 
 
 ### Custom Exception handling 
 ![ex](https://github.com/LakshanChinthaka/point-of-sale-system/assets/115285758/042ee44c-8732-4599-ab1b-24650a0c0fa7)
-
-## Course Controller code 
-![image](https://github.com/LakshanChinthaka/learning-management-system/assets/115285758/92eab678-338d-49bc-9c14-e35bd80d7905)
-
 
