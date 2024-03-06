@@ -20,14 +20,11 @@ This project is a comprehensive web application built using Spring Boot, React, 
 ##### 13. Responsive Design: All interfaces are designed to be responsive for optimal viewing across devices.
 
 
-## Database diagram
+### Database diagram
 ![@localhost](https://github.com/LakshanChinthaka/backend-royal-lms-system/assets/115285758/189ab9f8-103f-4d34-bea0-66b69000d305)
-
-## Web Application 
 
 ### Home Page
 ![image](https://github.com/LakshanChinthaka/backend-royal-lms-system/assets/115285758/48670d4d-108d-44c8-b3c2-2c946272593f)
-
 
 ###  Admin Dashboard
 ![image](https://github.com/LakshanChinthaka/backend-royal-lms-system/assets/115285758/a6ff2a6c-0de4-4ea9-8db3-5d2b49f08e8f)
@@ -35,15 +32,11 @@ This project is a comprehensive web application built using Spring Boot, React, 
 ### Backend Folder Structure
 ![image](https://github.com/LakshanChinthaka/backend-royal-lms-system/assets/115285758/4db33c05-adac-45e0-966d-be891f96b645)
 
-
 ### Pagination
 ![image](https://github.com/LakshanChinthaka/backend-royal-lms-system/assets/115285758/3ced5327-19fc-4cdb-aac1-7fc8db1488bf)
 
 ### Create batch Method
 ![image](https://github.com/LakshanChinthaka/backend-royal-lms-system/assets/115285758/6c81f7b2-61c9-466e-aa29-8499983c0f1a)
-
-### Pagination 
-![image](https://github.com/LakshanChinthaka/learning-management-system/assets/115285758/690d4f72-c884-4205-a4a7-f51fa082c507)
 
 ### A case where spring boot actuator was used
 ![image](https://github.com/LakshanChinthaka/backend-royal-lms-system/assets/115285758/dda62664-e9e0-48e7-9567-fa84c10ff0e8)
