@@ -4,20 +4,20 @@
 
 This project is a comprehensive web application built using Spring Boot, React, and various technologies to provide a robust platform for managing student data, assignments, and educational resources. Here's a brief overview of the key features:
 
-## Features Used Technology
-##### 1.  Authentication and Security ### : Utilizes Spring Boot JWT for secure role-based authentication (Role - Student and Admin).
-2. **File and Image Storage: Firebase integration for storing assignment files and profile pictures.
-3. **Scalable Deployment: Backend deployed on AWS EC2, with the database on AWS RDS, ensuring scalability and reliability.
-4. **Entity Management: CRUD operations for entities like Student, Course, Batch, etc.
-5. **Course Enrollment: Allows assigning subjects to courses and enrolling students in courses and batches.
-6. **Email Integration: Facility to send emails integrated within the system.
-7. **Data Visualization: Utilizes Pie, Bar, and Line charts to visualize assignment, student, and system data.
-8. **Admin Dashboard: Real-time display of total students, subjects, schools, assignments, and pass rates
-9. **Monitoring and Metrics: Tracks 200, 400, 404, 500 HTTP request count, error count, CPU, RAM, and database status using Spring Boot Actuator.
-10. **Exception Handling: Custom exception handling for better error management.
-11. **Performance Optimization: Implements pagination to improve API performance.
-12. **Frontend Interaction: Axios for API data fetch, with state management in React using useState, useEffect, and Context.
-13. **Responsive Design: All interfaces are designed to be responsive for optimal viewing across devices.
+## Features
+##### 1.  Authentication and Security: Utilizes Spring Boot JWT for secure role-based authentication (Role - Student and Admin).
+##### 2. File and Image Storage: Firebase integration for storing assignment files and profile pictures.
+##### 3. Scalable Deployment: Backend deployed on AWS EC2, with the database on AWS RDS, ensuring scalability and reliability.
+##### 4. Entity Management: CRUD operations for entities like Student, Course, Batch, etc.
+##### 5. Course Enrollment: Allows assigning subjects to courses and enrolling students in courses and batches.
+##### 6. Email Integration: Facility to send emails integrated within the system.
+##### 7. Data Visualization: Utilizes Pie, Bar, and Line charts to visualize assignment, student, and system data.
+##### 8. Admin Dashboard: Real-time display of total students, subjects, schools, assignments, and pass rates
+##### 9. Monitoring and Metrics: Tracks 200, 400, 404, 500 HTTP request count, error count, CPU, RAM, and database status using Spring Boot Actuator.
+##### 10. Exception Handling: Custom exception handling for better error management.
+##### 11. Performance Optimization: Implements pagination to improve API performance.
+##### 12. Frontend Interaction: Axios for API data fetch, with state management in React using useState, useEffect, and Context.
+##### 13. Responsive Design: All interfaces are designed to be responsive for optimal viewing across devices.
 
 
 ## Database diagram
@@ -48,14 +48,7 @@ This project is a comprehensive web application built using Spring Boot, React, 
 ### A case where spring boot actuator was used
 ![image](https://github.com/LakshanChinthaka/backend-royal-lms-system/assets/115285758/dda62664-e9e0-48e7-9567-fa84c10ff0e8)
 
-
-##  Reusable code
-![image](https://github.com/LakshanChinthaka/learning-management-system/assets/115285758/4525fd69-67cc-42a2-a55a-5ff0b1d2a3b9)
-
-## SQL Native Query
-![image](https://github.com/LakshanChinthaka/learning-management-system/assets/115285758/a0e93021-3c36-45c1-915c-ee93e6315394)
-
-## Custom Exception handling 
+### Custom Exception handling 
 ![ex](https://github.com/LakshanChinthaka/point-of-sale-system/assets/115285758/042ee44c-8732-4599-ab1b-24650a0c0fa7)
 
 ## Course Controller code 
