@@ -2,30 +2,22 @@
 
 ### Used Technology -  Spring boot | React | MySQL | Firebase | AWS RDS & EC2 | TailwindCSS
 
-Welcome to our GitHub repository! This educational management system enables students to upload and download assignment files, assigns subjects to courses, and allows flexible student enrollment. The database handles various entity relationships, and SQL native queries facilitate data retrieval. Custom exceptions enhance system reliability, and Map Struct streamlines entity-DTO mapping. The use of reusable code reduces duplication, and ResponseEntity ensures standardized user responses. Swagger 2 is integrated for easy API interaction, and CRUD operations are implemented for students, courses, assignments, subjects, and addresses. Explore our repository for more details!
+This project is a comprehensive web application built using Spring Boot, React, and various technologies to provide a robust platform for managing student data, assignments, and educational resources. Here's a brief overview of the key features:
 
 ## Features Used Technology
-1. Spring Boot JWT is used for security (Role - Student and Admin)
-2. Firebase is used to store assignment files and profile pictures
-3. The back-end is deployed in AWS EC2 and the database is deployed in AWS RDS
-4. There are Entities like Student, Course, Batch, Account Assignment, Address, School, Subject, Qualification and also have CRUD operation.
-5. Can assign subjects to courses and after registering students, can enroll in courses and batches
-6. There are facilities to send email
-7. Pie, Bar, Line chart is used to display assignment, student and system data
-8. Admin Dashboard total student, subject, school, assignment as well as pass rate has been displayed in real time
-9. Total 400,404,500 error count and 200 HTTP request count has been tracked by spring boot actuator.
-10. Spring boot actuator has been used for measure CPU, RAM and server
-and database status of the system.
-11. Custom exception has been used to handle exception
-12. SQL native query is used
-13. Pagination used to improve the API
-14. Axios uses for API data fetch, adept at managing state in React with
-useState, useEffect, and Context
-14. Axios uses for API data fetch, adept at managing state in React with
-useState, useEffect, and Context
-15. All interfaces are responsive
-16. All interfaces are responsive
-17. and more....
+    **Authentication and Security: Utilizes Spring Boot JWT for secure role-based authentication (Role - Student and Admin).
+    File and Image Storage: Firebase integration for storing assignment files and profile pictures.
+    Scalable Deployment: Backend deployed on AWS EC2, with the database on AWS RDS, ensuring scalability and reliability.
+    Entity Management: CRUD operations for entities like Student, Course, Batch, etc.
+    Course Enrollment: Allows assigning subjects to courses and enrolling students in courses and batches.
+    Email Integration: Facility to send emails integrated within the system.
+    Data Visualization: Utilizes Pie, Bar, and Line charts to visualize assignment, student, and system data.
+    Admin Dashboard: Real-time display of total students, subjects, schools, assignments, and pass rates.
+    Monitoring and Metrics: Tracks HTTP request count, error count, CPU, RAM, and database status using Spring Boot Actuator.
+    Exception Handling: Custom exception handling for better error management.
+    Performance Optimization: Implements pagination to improve API performance.
+    Frontend Interaction: Axios for API data fetch, with state management in React using useState, useEffect, and Context.
+    Responsive Design: All interfaces are designed to be responsive for optimal viewing across devices.
 
 ## Database diagram
 ![@localhost](https://github.com/LakshanChinthaka/backend-royal-lms-system/assets/115285758/189ab9f8-103f-4d34-bea0-66b69000d305)
@@ -34,6 +26,10 @@ useState, useEffect, and Context
 
 ### Home Page
 ![image](https://github.com/LakshanChinthaka/backend-royal-lms-system/assets/115285758/48670d4d-108d-44c8-b3c2-2c946272593f)
+
+
+###  Admin Dashboard
+![image](https://github.com/LakshanChinthaka/backend-royal-lms-system/assets/115285758/a6ff2a6c-0de4-4ea9-8db3-5d2b49f08e8f)
 
 ### Backend Folder Structure
 ![image](https://github.com/LakshanChinthaka/backend-royal-lms-system/assets/115285758/4db33c05-adac-45e0-966d-be891f96b645)
@@ -48,11 +44,9 @@ useState, useEffect, and Context
 ### Pagination 
 ![image](https://github.com/LakshanChinthaka/learning-management-system/assets/115285758/690d4f72-c884-4205-a4a7-f51fa082c507)
 
-A case where spring boot actuator was used
+### A case where spring boot actuator was used
 ![image](https://github.com/LakshanChinthaka/backend-royal-lms-system/assets/115285758/dda62664-e9e0-48e7-9567-fa84c10ff0e8)
 
-##  Data filtering
-![image](https://github.com/LakshanChinthaka/learning-management-system/assets/115285758/2671c17d-143f-467d-9c89-4df0b480272a)
 
 ##  Reusable code
 ![image](https://github.com/LakshanChinthaka/learning-management-system/assets/115285758/4525fd69-67cc-42a2-a55a-5ff0b1d2a3b9)
