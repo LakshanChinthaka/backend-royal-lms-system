@@ -1,10 +1,10 @@
-# Learning Menagement System
+# Learning Management System (Back-end)
 
 ### Used Technology -  Spring boot | React | MySQL | Firebase | AWS RDS & EC2 | TailwindCSS
 
 Welcome to our GitHub repository! This educational management system enables students to upload and download assignment files, assigns subjects to courses, and allows flexible student enrollment. The database handles various entity relationships, and SQL native queries facilitate data retrieval. Custom exceptions enhance system reliability, and Map Struct streamlines entity-DTO mapping. The use of reusable code reduces duplication, and ResponseEntity ensures standardized user responses. Swagger 2 is integrated for easy API interaction, and CRUD operations are implemented for students, courses, assignments, subjects, and addresses. Explore our repository for more details!
 
-## Features
+## Features Used Technology
 1. Spring Boot JWT is used for security (Role - Student and Admin)
 2. Firebase is used to store assignment files and profile pictures
 3. The back-end is deployed in AWS EC2 and the database is deployed in AWS RDS
@@ -33,25 +33,23 @@ useState, useEffect, and Context
 ## Web Application 
 
 ### Home Page
-![image](https://github.com/LakshanChinthaka/learning-management-system/assets/115285758/dc8e1522-7df2-408a-9de6-7cf472ec86d0)
+![image](https://github.com/LakshanChinthaka/backend-royal-lms-system/assets/115285758/48670d4d-108d-44c8-b3c2-2c946272593f)
 
-### Subject Controller
-![image](https://github.com/LakshanChinthaka/learning-management-system/assets/115285758/72f6c395-8fa0-4d12-b0b1-0dddc61a97d5)
+### Backend Folder Structure
+![image](https://github.com/LakshanChinthaka/backend-royal-lms-system/assets/115285758/4db33c05-adac-45e0-966d-be891f96b645)
 
 
-### Assignment Controller
-![image](https://github.com/LakshanChinthaka/learning-management-system/assets/115285758/18317613-bd21-4b6b-ae30-0a04c7ac8572)
+### Pagination
+![image](https://github.com/LakshanChinthaka/backend-royal-lms-system/assets/115285758/3ced5327-19fc-4cdb-aac1-7fc8db1488bf)
 
-### Assignment details Controller
-![image](https://github.com/LakshanChinthaka/learning-management-system/assets/115285758/25489aa7-4149-409b-9758-0570426f95a8)
+### Create batch Method
+![image](https://github.com/LakshanChinthaka/backend-royal-lms-system/assets/115285758/6c81f7b2-61c9-466e-aa29-8499983c0f1a)
 
 ### Pagination 
 ![image](https://github.com/LakshanChinthaka/learning-management-system/assets/115285758/690d4f72-c884-4205-a4a7-f51fa082c507)
 
-Response
-
-
-![image](https://github.com/LakshanChinthaka/learning-management-system/assets/115285758/2b5cea2b-9fc0-407c-9a14-6e9ca587d0d7)
+A case where spring boot actuator was used
+![image](https://github.com/LakshanChinthaka/backend-royal-lms-system/assets/115285758/dda62664-e9e0-48e7-9567-fa84c10ff0e8)
 
 ##  Data filtering
 ![image](https://github.com/LakshanChinthaka/learning-management-system/assets/115285758/2671c17d-143f-467d-9c89-4df0b480272a)
