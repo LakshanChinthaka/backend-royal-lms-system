@@ -29,9 +29,6 @@ This project is a comprehensive web application built using Spring Boot, React, 
 ###  Admin Dashboard
 ![image](https://github.com/LakshanChinthaka/backend-royal-lms-system/assets/115285758/a6ff2a6c-0de4-4ea9-8db3-5d2b49f08e8f)
 
-### Student Registration
-![image](https://github.com/LakshanChinthaka/backend-royal-lms-system/assets/115285758/61321109-c842-4c46-a8d2-fac01f1bd775)
-
 ### Pagination
 ![image](https://github.com/LakshanChinthaka/backend-royal-lms-system/assets/115285758/3ced5327-19fc-4cdb-aac1-7fc8db1488bf)
 
