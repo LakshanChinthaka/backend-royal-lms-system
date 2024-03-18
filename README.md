@@ -19,6 +19,19 @@ This project is a comprehensive web application built using Spring Boot, React, 
 ##### 12. Frontend Interaction: Axios for API data fetch, with state management in React using useState, useEffect, and Context.
 ##### 13. Responsive Design: All interfaces are designed to be responsive for optimal viewing across devices.
 
+## Getting Started
+To get started with our platform, follow these simple steps:
+### Frontend Setup
+##### 1. Clone this repo.`backend-royal-lms-system`.
+##### 2. Install dependencies using `npm install`
+##### 3. Run the development server using `npm run dev`.
+
+### Backtend Setup
+##### 1. Navigate to the `Royal-academy-lms-fontend` repo and clone it
+##### 2. Set up your MySQL database and configure the database connection in `application.properties`.
+##### 3. Build the Spring Boot application using your favorite IDE or Maven.
+##### 4. Run the application, and the backend server will start on the configured port.
+
 
 ### Database diagram
 ![@localhost](https://github.com/LakshanChinthaka/backend-royal-lms-system/assets/115285758/189ab9f8-103f-4d34-bea0-66b69000d305)
